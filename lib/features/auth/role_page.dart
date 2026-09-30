@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/api_client.dart';
 import 'auth_api.dart';
-import 'home_page.dart';
 import 'paw_logo.dart';
+import 'session_home.dart';
 import 'vet_info_page.dart';
 
 class RoleChoice {
@@ -112,7 +112,7 @@ class _RolePageState extends State<RolePage> {
       }
       await Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
-          builder: (_) => HomePage(session: session, authApi: widget.authApi),
+          builder: (_) => homeForSession(session: session, authApi: widget.authApi),
         ),
         (_) => false,
       );

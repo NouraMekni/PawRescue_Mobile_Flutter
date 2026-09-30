@@ -1,9 +1,12 @@
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+
 import '../../core/api_client.dart';
 
 class AuthApi {
-  AuthApi(this._client);
+  AuthApi(this.client);
 
-  final ApiClient _client;
+  final ApiClient client;
 
   Future<AuthSession> register({
     required String firstName,
@@ -12,7 +15,7 @@ class AuthApi {
     required String password,
     String role = 'citoyen',
   }) async {
-    final data = await _client.post('/api/auth/register/', {
+    final data = await client.post('/api/auth/register/', {
       'first_name': firstName,
       'last_name': lastName,
       'email': email,
@@ -35,7 +38,7 @@ class AuthApi {
     required String documentName,
     required List<int> documentBytes,
   }) {
-    return _client.postMultipart(
+    return client.postMultipart(
       '/api/auth/register/',
       fields: {
         'first_name': firstName,
@@ -59,13 +62,55 @@ class AuthApi {
     required String email,
     required String password,
   }) async {
-    final tokens = await _client.post('/api/auth/token/', {
+    final tokens = await client.post('/api/auth/token/', {
       'email': email,
       'password': password,
     });
     final access = tokens['access'] as String;
-    final profile = await _client.get('/api/auth/me/', token: access);
+    final profile = await client.get('/api/auth/me/', token: access);
     return AuthSession(accessToken: access, user: profile);
+  }
+
+  Future<Map<String, dynamic>> updateProfile({
+    required String token,
+    required String firstName,
+    required String lastName,
+    required String phone,
+    Map<String, dynamic>? profile,
+  }) {
+    return client.patch('/api/auth/me/', {
+      'first_name': firstName,
+      'last_name': lastName,
+      'phone': phone,
+      if (profile != null) 'profile': profile,
+    }, token: token);
+  }
+
+  Future<Map<String, dynamic>> updateProfilePhoto({
+    required String token,
+    required String filename,
+    required List<int> bytes,
+  }) {
+    final lower = filename.toLowerCase();
+    final subtype = lower.endsWith('.png')
+        ? 'png'
+        : lower.endsWith('.webp')
+        ? 'webp'
+        : 'jpeg';
+    return client.postMultipart(
+      '/api/auth/me/',
+      method: 'PATCH',
+      token: token,
+      fields: const {},
+      files: [
+        http.MultipartFile.fromBytes(
+          'photo',
+          bytes,
+          filename: filename,
+          contentType: MediaType('image', subtype),
+        ),
+      ],
+    );
   }
 }
 

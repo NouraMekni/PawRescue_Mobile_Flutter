@@ -21,6 +21,9 @@ void main() {
 
   testWidgets('register shows the profile returned by the API', (tester) async {
     final client = MockClient((request) async {
+      if (request.method == 'GET' && request.url.path == '/api/reports/') {
+        return http.Response('[]', 200);
+      }
       expect(request.url.path, '/api/auth/register/');
       return http.Response(
         jsonEncode({
@@ -53,8 +56,8 @@ void main() {
     await tester.tap(find.text('Continuer').last);
     await tester.pumpAndSettle();
 
-    expect(find.text('E-mail : sara.mobile@test.tn'), findsOneWidget);
-    expect(find.text('Rôle : citoyen'), findsOneWidget);
+    expect(find.text('Signaler un animal'), findsOneWidget);
+    expect(find.text('sara.mobile@test.tn'), findsOneWidget);
   });
 
   testWidgets('veterinaire opens the professional form', (tester) async {

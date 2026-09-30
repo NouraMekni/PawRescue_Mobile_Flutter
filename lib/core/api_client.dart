@@ -25,26 +25,51 @@ class ApiClient {
     String path,
     Map<String, dynamic> body, {
     String? token,
-  }) {
-    return _send('POST', path, body: body, token: token);
+  }) async {
+    return _asMap(await _send('POST', path, body: body, token: token));
   }
 
-  Future<Map<String, dynamic>> get(String path, {String? token}) {
-    return _send('GET', path, token: token);
+  Future<Map<String, dynamic>> patch(
+    String path,
+    Map<String, dynamic> body, {
+    String? token,
+  }) async {
+    return _asMap(await _send('PATCH', path, body: body, token: token));
+  }
+
+  Future<Map<String, dynamic>> get(String path, {String? token}) async {
+    return _asMap(await _send('GET', path, token: token));
+  }
+
+  Future<List<dynamic>> getList(String path, {String? token}) async {
+    final decoded = await _send('GET', path, token: token);
+    if (decoded is List) {
+      return decoded;
+    }
+    throw ApiException('Réponse inattendue du serveur.');
   }
 
   Future<Map<String, dynamic>> postMultipart(
     String path, {
     required Map<String, String> fields,
-    required String fileField,
-    required String filename,
-    required List<int> bytes,
+    String method = 'POST',
+    String? token,
+    String? fileField,
+    String? filename,
+    List<int>? bytes,
+    List<http.MultipartFile> files = const [],
   }) async {
-    final request = http.MultipartRequest('POST', Uri.parse('$_baseUrl$path'))
+    final request = http.MultipartRequest(method, Uri.parse('$_baseUrl$path'))
       ..fields.addAll(fields)
-      ..files.add(
+      ..files.addAll(files);
+    if (token != null && token.isNotEmpty) {
+      request.headers['Authorization'] = 'Bearer $token';
+    }
+    if (fileField != null && filename != null && bytes != null) {
+      request.files.add(
         http.MultipartFile.fromBytes(fileField, bytes, filename: filename),
       );
+    }
     final response = await _client.send(request);
     final text = await response.stream.bytesToString();
     final decoded = text.isEmpty ? <String, dynamic>{} : jsonDecode(text);
@@ -57,7 +82,7 @@ class ApiClient {
     throw ApiException(readApiError(decoded));
   }
 
-  Future<Map<String, dynamic>> _send(
+  Future<Object?> _send(
     String method,
     String path, {
     Map<String, dynamic>? body,
@@ -77,13 +102,17 @@ class ApiClient {
     final decoded = text.isEmpty ? <String, dynamic>{} : jsonDecode(text);
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      if (decoded is Map) {
-        return Map<String, dynamic>.from(decoded);
-      }
-      throw ApiException('Réponse inattendue du serveur.');
+      return decoded;
     }
 
     throw ApiException(readApiError(decoded));
+  }
+
+  Map<String, dynamic> _asMap(Object? decoded) {
+    if (decoded is Map) {
+      return Map<String, dynamic>.from(decoded);
+    }
+    throw ApiException('Réponse inattendue du serveur.');
   }
 }
 
