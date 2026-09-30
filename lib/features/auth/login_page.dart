@@ -83,20 +83,21 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const Positioned(
                   left: 24,
-                  top: 52,
-                  child: Text(
-                    'PawRescue',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.w800,
-                    ),
+                  top: 48,
+                  child: Row(
+                    children: [
+                      Icon(Icons.pets, color: Colors.white, size: 36),
+                      SizedBox(width: 10),
+                      Text(
+                        'PawRescue',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                const Positioned(
-                  right: 24,
-                  top: 58,
-                  child: Icon(Icons.pets, color: Colors.white, size: 22),
                 ),
                 Positioned(
                   left: 0,

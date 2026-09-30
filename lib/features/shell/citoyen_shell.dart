@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../auth/auth_api.dart';
 import '../auth/paw_logo.dart';
+import '../messages/directory_page.dart';
+import '../messages/messages_page.dart';
+import '../notifications/notifications_page.dart';
 import '../reports/citoyen_home_page.dart';
 import 'placeholder_tab.dart';
 import 'profile_tab.dart';
@@ -18,6 +21,7 @@ class PawShell extends StatefulWidget {
 
 class _PawShellState extends State<PawShell> {
   int _index = 0;
+  int _unreadNotifications = 0;
 
   static const _tabs = [
     _Tab('Accueil', Icons.home_outlined, Icons.home),
@@ -52,15 +56,16 @@ class _PawShellState extends State<PawShell> {
             icon: Icons.map,
             message: 'La carte montrera l’emplacement de tous les animaux signalés.',
           ),
-          const PlaceholderTab(
-            title: 'Messages',
-            icon: Icons.chat_bubble,
-            message: 'Vos conversations avec les refuges apparaîtront ici.',
-          ),
-          const PlaceholderTab(
-            title: 'Notifications',
-            icon: Icons.notifications,
-            message: 'Vos notifications apparaîtront ici.',
+          MessagesPage(session: widget.session, authApi: widget.authApi),
+          NotificationsPage(
+            session: widget.session,
+            authApi: widget.authApi,
+            onUnreadChanged: (count) {
+              if (count == _unreadNotifications) {
+                return;
+              }
+              setState(() => _unreadNotifications = count);
+            },
           ),
           ProfileTab(
             session: widget.session,
@@ -71,6 +76,7 @@ class _PawShellState extends State<PawShell> {
       ),
       bottomNavigationBar: _PawBar(
         index: _index,
+        unreadNotifications: _unreadNotifications,
         onSelected: (value) => setState(() => _index = value),
       ),
     );
@@ -80,14 +86,15 @@ class _PawShellState extends State<PawShell> {
     if (widget.session.user['role'] == 'citoyen') {
       return CitoyenHomePage(session: widget.session, authApi: widget.authApi);
     }
-    return RoleHomePage(session: widget.session);
+    return RoleHomePage(session: widget.session, authApi: widget.authApi);
   }
 }
 
 class RoleHomePage extends StatelessWidget {
-  const RoleHomePage({super.key, required this.session});
+  const RoleHomePage({super.key, required this.session, required this.authApi});
 
   final AuthSession session;
+  final AuthApi authApi;
 
   @override
   Widget build(BuildContext context) {
@@ -117,6 +124,10 @@ class RoleHomePage extends StatelessWidget {
             'Complétez votre profil depuis l’onglet Profil.',
             style: TextStyle(fontSize: 16, height: 1.4),
           ),
+          if (user['role'] == 'benevole') ...[
+            const SizedBox(height: 20),
+            DirectoryButtons(session: session, authApi: authApi),
+          ],
         ],
       ),
     );
@@ -132,9 +143,14 @@ class _Tab {
 }
 
 class _PawBar extends StatelessWidget {
-  const _PawBar({required this.index, required this.onSelected});
+  const _PawBar({
+    required this.index,
+    required this.unreadNotifications,
+    required this.onSelected,
+  });
 
   final int index;
+  final int unreadNotifications;
   final ValueChanged<int> onSelected;
 
   @override
@@ -163,6 +179,7 @@ class _PawBar extends StatelessWidget {
                     child: _PawBarItem(
                       tab: _PawShellState._tabs[i],
                       selected: index == i,
+                      showBadge: i == 5 && unreadNotifications > 0,
                       onTap: () => onSelected(i),
                     ),
                   ),
@@ -180,10 +197,12 @@ class _PawBarItem extends StatelessWidget {
     required this.tab,
     required this.selected,
     required this.onTap,
+    this.showBadge = false,
   });
 
   final _Tab tab;
   final bool selected;
+  final bool showBadge;
   final VoidCallback onTap;
 
   @override
@@ -197,7 +216,21 @@ class _PawBarItem extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(selected ? tab.selectedIcon : tab.icon, color: color, size: 22),
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Icon(selected ? tab.selectedIcon : tab.icon, color: color, size: 22),
+                if (showBadge)
+                  const Positioned(
+                    right: -2,
+                    top: -2,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(color: PawLogo.green, shape: BoxShape.circle),
+                      child: SizedBox(width: 8, height: 8),
+                    ),
+                  ),
+              ],
+            ),
             const SizedBox(height: 2),
             Text(
               tab.label,

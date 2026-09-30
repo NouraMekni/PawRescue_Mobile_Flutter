@@ -206,6 +206,7 @@ class _ProfileTabState extends State<ProfileTab> {
       case 'veterinaire':
         return {
           'license_number': _license.text.trim(),
+          'address': _address.text.trim(),
           'specialties': _specialties.text.trim(),
           'is_available': _available,
           'radius_km': _readDouble(_radius) ?? 15,
@@ -236,13 +237,8 @@ class _ProfileTabState extends State<ProfileTab> {
     if (_usesLocation && (latitudeInvalid || longitudeInvalid)) {
       return 'La latitude ou la longitude est invalide.';
     }
-    if (_role == 'refuge') {
-      if (_refugeName.text.trim().isEmpty) {
-        return 'Le nom du refuge est obligatoire.';
-      }
-      if (_readDouble(_latitude) == null || _readDouble(_longitude) == null) {
-        return 'Indiquez la position du refuge.';
-      }
+    if (_role == 'refuge' && _refugeName.text.trim().isEmpty) {
+      return 'Le nom du refuge est obligatoire.';
     }
     if (_role == 'benevole' && _maxMissions.text.trim().isNotEmpty && _readInt(_maxMissions) == null) {
       return 'Le nombre de missions est invalide.';
@@ -408,6 +404,8 @@ class _ProfileTabState extends State<ProfileTab> {
       case 'veterinaire':
         return [
           _field(_license, 'Numéro de licence'),
+          const SizedBox(height: 12),
+          _field(_address, 'Adresse'),
           const SizedBox(height: 12),
           _field(_specialties, 'Spécialités', maxLines: 2),
           const SizedBox(height: 12),

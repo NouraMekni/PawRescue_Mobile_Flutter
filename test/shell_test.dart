@@ -41,7 +41,7 @@ void main() {
 
     await tester.tap(find.text('Notifs'));
     await tester.pumpAndSettle();
-    expect(find.text('Vos notifications apparaîtront ici.'), findsOneWidget);
+    expect(find.text('Aucune notification.'), findsOneWidget);
 
     await tester.tap(find.text('Profil'));
     await tester.pumpAndSettle();
@@ -61,7 +61,9 @@ void main() {
             accessToken: 'token',
             user: {'email': 'refuge@test.tn', 'role': 'refuge', 'first_name': 'Sami'},
           ),
-          authApi: AuthApi(ApiClient()),
+          authApi: AuthApi(
+            ApiClient(client: MockClient((request) async => http.Response('[]', 200))),
+          ),
         ),
       ),
     );

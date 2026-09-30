@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import '../../core/api_client.dart';
 import '../auth/auth_api.dart';
 import '../auth/paw_logo.dart';
+import '../messages/compose_page.dart';
+import '../messages/directory_page.dart';
+import '../messages/messages_api.dart';
 import 'report_form_page.dart';
 import 'reports_api.dart';
 
@@ -127,6 +130,8 @@ class _CitoyenHomePageState extends State<CitoyenHomePage> {
                 ),
               ),
             ),
+            const SizedBox(height: 12),
+            DirectoryButtons(session: widget.session, authApi: widget.authApi),
             const SizedBox(height: 28),
             const Text(
               'Mes signalements',
@@ -143,7 +148,24 @@ class _CitoyenHomePageState extends State<CitoyenHomePage> {
             else if (_items.isEmpty)
               const _EmptyReports()
             else
-              for (final report in _items) _ReportCard(report: report),
+              for (final report in _items)
+                _ReportCard(
+                  report: report,
+                  onContact: report['assigned_refuge'] == null
+                      ? null
+                      : () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => ComposePage(
+                                session: widget.session,
+                                api: MessagesApi(widget.authApi.client),
+                                refugeId: report['assigned_refuge'] as int,
+                                reportId: report['id'] as int,
+                              ),
+                            ),
+                          );
+                        },
+                ),
           ],
         ),
       ),
@@ -175,9 +197,10 @@ class _EmptyReports extends StatelessWidget {
 }
 
 class _ReportCard extends StatelessWidget {
-  const _ReportCard({required this.report});
+  const _ReportCard({required this.report, this.onContact});
 
   final Map<String, dynamic> report;
+  final VoidCallback? onContact;
 
   @override
   Widget build(BuildContext context) {
@@ -214,6 +237,14 @@ class _ReportCard extends StatelessWidget {
             const SizedBox(height: 6),
             Text(description, maxLines: 2, overflow: TextOverflow.ellipsis),
           ],
+          if (onContact != null)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton(
+                onPressed: onContact,
+                child: const Text('Contacter le refuge'),
+              ),
+            ),
         ],
       ),
     );
