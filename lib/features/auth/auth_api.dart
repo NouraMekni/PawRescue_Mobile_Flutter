@@ -58,6 +58,45 @@ class AuthApi {
     );
   }
 
+  Future<void> registerRefuge({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String password,
+    required String phone,
+    required String name,
+    required String structure,
+    required String rne,
+    required String governorate,
+    required String address,
+    required String officialEmail,
+    required String representativeName,
+    required String documentName,
+    required List<int> documentBytes,
+  }) {
+    return client.postMultipart(
+      '/api/auth/register/',
+      fields: {
+        'first_name': firstName,
+        'last_name': lastName,
+        'email': email,
+        'password': password,
+        'role': 'refuge',
+        'phone': phone,
+        'name': name,
+        'structure': structure,
+        'rne': rne,
+        'governorate': governorate,
+        'address': address,
+        'official_email': officialEmail,
+        'representative_name': representativeName,
+      },
+      fileField: 'verification_document',
+      filename: documentName,
+      bytes: documentBytes,
+    );
+  }
+
   Future<AuthSession> login({
     required String email,
     required String password,

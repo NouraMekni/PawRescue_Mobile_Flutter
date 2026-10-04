@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/api_client.dart';
 import 'auth_api.dart';
 import 'paw_logo.dart';
+import 'refuge_info_page.dart';
 import 'session_home.dart';
 import 'vet_info_page.dart';
 
@@ -81,18 +82,23 @@ class _RolePageState extends State<RolePage> {
   bool _loading = false;
 
   Future<void> _submit() async {
-    if (_role == 'veterinaire') {
-      await Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => VetInfoPage(
-            authApi: widget.authApi,
-            firstName: widget.firstName,
-            lastName: widget.lastName,
-            email: widget.email,
-            password: widget.password,
-          ),
-        ),
-      );
+    if (_role == 'veterinaire' || _role == 'refuge') {
+      final page = _role == 'veterinaire'
+          ? VetInfoPage(
+              authApi: widget.authApi,
+              firstName: widget.firstName,
+              lastName: widget.lastName,
+              email: widget.email,
+              password: widget.password,
+            )
+          : RefugeInfoPage(
+              authApi: widget.authApi,
+              firstName: widget.firstName,
+              lastName: widget.lastName,
+              email: widget.email,
+              password: widget.password,
+            );
+      await Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
       return;
     }
     setState(() {
