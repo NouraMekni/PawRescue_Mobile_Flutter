@@ -7,6 +7,18 @@ import '../auth/auth_api.dart';
 import 'animal_api.dart';
 import 'animal_models.dart';
 
+class AnimalDetailRouteArguments {
+  const AnimalDetailRouteArguments({
+    required this.animal,
+    required this.session,
+    required this.animalApi,
+  });
+
+  final Animal animal;
+  final AuthSession session;
+  final AnimalApi animalApi;
+}
+
 class AnimalDetailPage extends StatefulWidget {
   const AnimalDetailPage({
     super.key,

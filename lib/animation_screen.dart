@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
+import 'core/app_routes.dart';
 import 'features/auth/auth_api.dart';
-import 'features/auth/login_page.dart';
 
 class AnimationScreen extends StatefulWidget {
   const AnimationScreen({super.key, required this.authApi});
@@ -25,11 +25,7 @@ class _AnimationScreenState extends State<AnimationScreen> {
       if (!mounted) {
         return;
       }
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute<void>(
-          builder: (_) => LoginPage(authApi: widget.authApi),
-        ),
-      );
+      Navigator.of(context).pushReplacementNamed<void, void>(AppRoutes.login);
     });
   }
 

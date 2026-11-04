@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../../core/app_routes.dart';
 import '../../core/ads_service.dart';
 import '../auth/auth_api.dart';
 import 'animal_api.dart';
@@ -112,14 +113,11 @@ class _AnimalsPageState extends State<AnimalsPage> {
   }
 
   Future<void> _openAddAnimal() async {
-    final created = await Navigator.push<Animal>(
-      context,
-      MaterialPageRoute(
-        builder: (_) => AnimalFormPage(
-          session: widget.session,
-          authApi: widget.authApi,
-          animalApi: _animalApi,
-        ),
+    final created = await Navigator.of(context).pushNamed<Animal>(
+      AppRoutes.animalForm,
+      arguments: AnimalFormRouteArguments(
+        session: widget.session,
+        animalApi: _animalApi,
       ),
     );
 
@@ -142,15 +140,12 @@ class _AnimalsPageState extends State<AnimalsPage> {
   }
 
   Future<void> _openAnimal(Animal animal) async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => AnimalDetailPage(
-          animal: animal,
-          session: widget.session,
-          authApi: widget.authApi,
-          animalApi: _animalApi,
-        ),
+    await Navigator.of(context).pushNamed<void>(
+      AppRoutes.animalDetail,
+      arguments: AnimalDetailRouteArguments(
+        animal: animal,
+        session: widget.session,
+        animalApi: _animalApi,
       ),
     );
 

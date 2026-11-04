@@ -9,6 +9,16 @@ import '../auth/auth_api.dart';
 import 'animal_api.dart';
 import 'animal_models.dart';
 
+class AnimalFormRouteArguments {
+  const AnimalFormRouteArguments({
+    required this.session,
+    required this.animalApi,
+  });
+
+  final AuthSession session;
+  final AnimalApi animalApi;
+}
+
 class AnimalFormPage extends StatefulWidget {
   final AuthSession session;
   final AuthApi authApi;

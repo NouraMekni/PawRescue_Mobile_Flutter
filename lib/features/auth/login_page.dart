@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../core/api_client.dart';
+import '../../core/app_routes.dart';
 import '../../l10n/app_localizations.dart';
 import 'auth_api.dart';
 import 'paw_logo.dart';
 import 'register_page.dart';
-import 'session_home.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key, required this.authApi});
@@ -50,12 +50,8 @@ class _LoginPageState extends State<LoginPage> {
       if (!mounted) {
         return;
       }
-      await Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (_) =>
-              homeForSession(session: session, authApi: widget.authApi),
-        ),
-      );
+      await Navigator.of(context)
+          .pushReplacementNamed<void, void>(AppRoutes.home, arguments: session);
     } on ApiException catch (error) {
       setState(() => _error = error.message);
     } catch (_) {

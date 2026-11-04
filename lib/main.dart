@@ -7,9 +7,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/api_client.dart';
 import 'core/ads_service.dart';
+import 'core/app_routes.dart';
 import 'core/theme_controller.dart';
 import 'animation_screen.dart';
+import 'features/animals/animal_detail_page.dart';
+import 'features/animals/animal_form_page.dart';
 import 'features/auth/auth_api.dart';
+import 'features/auth/login_page.dart';
+import 'features/auth/session_home.dart';
 import 'l10n/app_localizations.dart';
 
 Future<void> main() async {
@@ -24,10 +29,11 @@ Future<void> main() async {
           : 'fr',
     ),
   );
+  final authApi = AuthApi(ApiClient());
   runApp(
     ChangeNotifierProvider.value(
       value: themeController,
-      child: const PawRescueApp(),
+      child: PawRescueApp(authApi: authApi),
     ),
   );
   unawaited(_initializeAds());
@@ -42,7 +48,9 @@ Future<void> _initializeAds() async {
 }
 
 class PawRescueApp extends StatelessWidget {
-  const PawRescueApp({super.key});
+  const PawRescueApp({super.key, required this.authApi});
+
+  final AuthApi authApi;
 
   @override
   Widget build(BuildContext context) {
@@ -60,8 +68,63 @@ class PawRescueApp extends StatelessWidget {
       themeMode: themeController.themeMode,
       theme: _buildTheme(Brightness.light),
       darkTheme: _buildTheme(Brightness.dark),
-      home: AnimationScreen(authApi: AuthApi(ApiClient())),
+      initialRoute: AppRoutes.animation,
+      onGenerateRoute: _onGenerateRoute,
     );
+  }
+
+  Route<dynamic>? _onGenerateRoute(RouteSettings settings) {
+    final Widget page;
+    switch (settings.name) {
+      case AppRoutes.animation:
+        page = AnimationScreen(authApi: authApi);
+        break;
+      case AppRoutes.login:
+        page = LoginPage(authApi: authApi);
+        break;
+      case AppRoutes.home:
+        final session = settings.arguments;
+        if (session is! AuthSession) {
+          throw ArgumentError(
+            'The ${AppRoutes.home} route requires an AuthSession argument.',
+          );
+        }
+        page = homeForSession(session: session, authApi: authApi);
+        break;
+      case AppRoutes.animalForm:
+        final arguments = settings.arguments;
+        if (arguments is! AnimalFormRouteArguments) {
+          throw ArgumentError(
+            'The ${AppRoutes.animalForm} route requires '
+            'AnimalFormRouteArguments.',
+          );
+        }
+        page = AnimalFormPage(
+          session: arguments.session,
+          authApi: authApi,
+          animalApi: arguments.animalApi,
+        );
+        break;
+      case AppRoutes.animalDetail:
+        final arguments = settings.arguments;
+        if (arguments is! AnimalDetailRouteArguments) {
+          throw ArgumentError(
+            'The ${AppRoutes.animalDetail} route requires '
+            'AnimalDetailRouteArguments.',
+          );
+        }
+        page = AnimalDetailPage(
+          animal: arguments.animal,
+          session: arguments.session,
+          authApi: authApi,
+          animalApi: arguments.animalApi,
+        );
+        break;
+      default:
+        return null;
+    }
+
+    return MaterialPageRoute<void>(settings: settings, builder: (_) => page);
   }
 
   ThemeData _buildTheme(Brightness brightness) {
