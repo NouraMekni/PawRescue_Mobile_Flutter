@@ -17,6 +17,9 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  static final _emailPattern = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+
+  final _formKey = GlobalKey<FormState>();
   final _email = TextEditingController();
   final _password = TextEditingController();
   String? _error;
@@ -31,6 +34,10 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _submit() async {
+    if (_formKey.currentState?.validate() != true) {
+      return;
+    }
+
     setState(() {
       _loading = true;
       _error = null;
@@ -139,39 +146,65 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 22),
-                TextField(
-                  controller: _email,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: _fieldDecoration(
-                    context.tr('E-mail'),
-                    Icons.mail_outline,
-                  ),
-                ),
-                const SizedBox(height: 14),
-                TextField(
-                  controller: _password,
-                  obscureText: _obscurePassword,
-                  decoration:
-                      _fieldDecoration(
-                        context.tr('Mot de passe'),
-                        Icons.lock_outline,
-                      ).copyWith(
-                        suffixIcon: IconButton(
-                          onPressed: () {
-                            setState(
-                              () => _obscurePassword = !_obscurePassword,
-                            );
-                          },
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurfaceVariant,
-                          ),
+                Form(
+                  key: _formKey,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: _email,
+                        keyboardType: TextInputType.emailAddress,
+                        textInputAction: TextInputAction.next,
+                        decoration: _fieldDecoration(
+                          context.tr('E-mail'),
+                          Icons.mail_outline,
                         ),
+                        validator: (value) {
+                          final email = value?.trim() ?? '';
+                          if (email.isEmpty) {
+                            return context.tr(
+                              'L’adresse e-mail est obligatoire.',
+                            );
+                          }
+                          if (!_emailPattern.hasMatch(email)) {
+                            return context.tr('Email invalide.');
+                          }
+                          return null;
+                        },
                       ),
+                      const SizedBox(height: 14),
+                      TextFormField(
+                        controller: _password,
+                        obscureText: _obscurePassword,
+                        textInputAction: TextInputAction.done,
+                        decoration:
+                            _fieldDecoration(
+                              context.tr('Mot de passe'),
+                              Icons.lock_outline,
+                            ).copyWith(
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(
+                                    () => _obscurePassword = !_obscurePassword,
+                                  );
+                                },
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility_outlined
+                                      : Icons.visibility_off_outlined,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
+                                ),
+                              ),
+                            ),
+                        validator: (value) => value == null || value.isEmpty
+                            ? context.tr('Le mot de passe est obligatoire.')
+                            : null,
+                        onFieldSubmitted: _loading ? null : (_) => _submit(),
+                      ),
+                    ],
+                  ),
                 ),
                 if (_error != null) ...[
                   const SizedBox(height: 12),

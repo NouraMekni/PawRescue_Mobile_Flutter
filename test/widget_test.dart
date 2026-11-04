@@ -19,6 +19,67 @@ void main() {
     expect(find.text('Mot de passe'), findsOneWidget);
   });
 
+  testWidgets('login shows required field errors without calling the API', (
+    tester,
+  ) async {
+    final client = MockClient((request) async {
+      fail('Login API must not be called with empty fields.');
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: LoginPage(authApi: AuthApi(ApiClient(client: client))),
+      ),
+    );
+    await tester.tap(find.text('Se connecter'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('L’adresse e-mail est obligatoire.'), findsOneWidget);
+    expect(find.text('Le mot de passe est obligatoire.'), findsOneWidget);
+  });
+
+  testWidgets('login validates email format without calling the API', (
+    tester,
+  ) async {
+    final client = MockClient((request) async {
+      fail('Login API must not be called with an invalid email.');
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: LoginPage(authApi: AuthApi(ApiClient(client: client))),
+      ),
+    );
+    await tester.enterText(find.byType(TextFormField).at(0), 'not-an-email');
+    await tester.enterText(find.byType(TextFormField).at(1), 'password');
+    await tester.tap(find.text('Se connecter'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Email invalide.'), findsOneWidget);
+  });
+
+  testWidgets('login requires a password before calling the API', (
+    tester,
+  ) async {
+    final client = MockClient((request) async {
+      fail('Login API must not be called with an empty password.');
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: LoginPage(authApi: AuthApi(ApiClient(client: client))),
+      ),
+    );
+    await tester.enterText(
+      find.byType(TextFormField).at(0),
+      'person@example.com',
+    );
+    await tester.tap(find.text('Se connecter'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Le mot de passe est obligatoire.'), findsOneWidget);
+  });
+
   testWidgets('register shows the profile returned by the API', (tester) async {
     final client = MockClient((request) async {
       if (request.method == 'GET' && request.url.path == '/api/reports/') {
@@ -27,7 +88,11 @@ void main() {
       expect(request.url.path, '/api/auth/register/');
       return http.Response(
         jsonEncode({
-          'user': {'email': 'sara.mobile@test.tn', 'role': 'citoyen', 'phone': ''},
+          'user': {
+            'email': 'sara.mobile@test.tn',
+            'role': 'citoyen',
+            'phone': '',
+          },
           'access': 'access-token',
           'refresh': 'refresh-token',
         }),
@@ -36,7 +101,9 @@ void main() {
     });
 
     await tester.pumpWidget(
-      MaterialApp(home: LoginPage(authApi: AuthApi(ApiClient(client: client)))),
+      MaterialApp(
+        home: LoginPage(authApi: AuthApi(ApiClient(client: client))),
+      ),
     );
     await tester.tap(find.text('Créer un compte'));
     await tester.pumpAndSettle();
@@ -84,7 +151,9 @@ void main() {
     expect(find.text('Informations professionnelles'), findsOneWidget);
   });
 
-  testWidgets('refuge opens the organisation form and not the app', (tester) async {
+  testWidgets('refuge opens the organisation form and not the app', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       MaterialApp(home: LoginPage(authApi: AuthApi(ApiClient()))),
     );
@@ -92,7 +161,10 @@ void main() {
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField).at(0), 'Ben Ali');
     await tester.enterText(find.byType(TextField).at(1), 'Nadia');
-    await tester.enterText(find.byType(TextField).at(2), 'refuge.mobile@test.tn');
+    await tester.enterText(
+      find.byType(TextField).at(2),
+      'refuge.mobile@test.tn',
+    );
     await tester.enterText(find.byType(TextField).at(3), 'StrongPass123');
     await tester.ensureVisible(find.text('Continuer'));
     await tester.pumpAndSettle();
@@ -126,10 +198,15 @@ void main() {
     });
 
     await tester.pumpWidget(
-      MaterialApp(home: LoginPage(authApi: AuthApi(ApiClient(client: client)))),
+      MaterialApp(
+        home: LoginPage(authApi: AuthApi(ApiClient(client: client))),
+      ),
     );
-    await tester.enterText(find.byType(TextField).at(0), 'refuge@example.com');
-    await tester.enterText(find.byType(TextField).at(1), 'StrongPass123');
+    await tester.enterText(
+      find.byType(TextFormField).at(0),
+      'refuge@example.com',
+    );
+    await tester.enterText(find.byType(TextFormField).at(1), 'StrongPass123');
     await tester.tap(find.text('Se connecter'));
     await tester.pumpAndSettle();
 
