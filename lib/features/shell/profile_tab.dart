@@ -6,6 +6,7 @@ import 'package:geolocator/geolocator.dart';
 
 import '../../core/api_client.dart';
 import '../../core/theme_controller.dart';
+import '../../l10n/app_localizations.dart';
 import '../auth/auth_api.dart';
 import '../auth/login_page.dart';
 import '../auth/paw_logo.dart';
@@ -180,7 +181,9 @@ class _ProfileTabState extends State<ProfileTab> {
       if (permission == LocationPermission.denied ||
           permission == LocationPermission.deniedForever) {
         setState(
-          () => _error = 'Autorisez la localisation pour remplir la position.',
+          () => _error = context.tr(
+            'Autorisez la localisation pour remplir la position.',
+          ),
         );
         return;
       }
@@ -192,7 +195,9 @@ class _ProfileTabState extends State<ProfileTab> {
       _latitude.text = position.latitude.toStringAsFixed(6);
       _longitude.text = position.longitude.toStringAsFixed(6);
     } catch (_) {
-      setState(() => _error = 'Activez la localisation de l\'appareil.');
+      setState(
+        () => _error = context.tr('Activez la localisation de l\'appareil.'),
+      );
     } finally {
       if (mounted) {
         setState(() => _locating = false);
@@ -282,7 +287,7 @@ class _ProfileTabState extends State<ProfileTab> {
     final validation = _validate();
     if (validation != null) {
       setState(() {
-        _error = validation;
+        _error = context.tr(validation);
         _saved = null;
       });
       return;
@@ -314,11 +319,11 @@ class _ProfileTabState extends State<ProfileTab> {
       if (!mounted) {
         return;
       }
-      setState(() => _saved = 'Profil enregistré.');
+      setState(() => _saved = context.tr('Profil enregistré.'));
     } on ApiException catch (error) {
       setState(() => _error = error.message);
     } catch (_) {
-      setState(() => _error = 'Impossible de joindre le serveur.');
+      setState(() => _error = context.tr('Impossible de joindre le serveur.'));
     } finally {
       if (mounted) {
         setState(() => _loading = false);
@@ -343,8 +348,8 @@ class _ProfileTabState extends State<ProfileTab> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        title: const Text(
-          'Profil',
+        title: Text(
+          context.tr('Profil'),
           style: TextStyle(fontWeight: FontWeight.w800),
         ),
       ),
@@ -372,14 +377,14 @@ class _ProfileTabState extends State<ProfileTab> {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Ajouter une photo',
+          Text(
+            context.tr('Ajouter une photo'),
             textAlign: TextAlign.center,
             style: TextStyle(color: PawLogo.green, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 8),
           Text(
-            roleLabel(_role),
+            context.tr(roleLabel(_role)),
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -389,7 +394,7 @@ class _ProfileTabState extends State<ProfileTab> {
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
             secondary: Icon(isDark ? Icons.dark_mode : Icons.light_mode),
-            title: const Text('Mode sombre'),
+            title: Text(context.tr('Mode sombre')),
             value: isDark,
             activeThumbColor: PawLogo.green,
             onChanged: themeController == null
@@ -402,9 +407,11 @@ class _ProfileTabState extends State<ProfileTab> {
                         return;
                       }
                       messenger.showSnackBar(
-                        const SnackBar(
+                        SnackBar(
                           content: Text(
-                            'Impossible d’enregistrer le thème choisi.',
+                            context.tr(
+                              'Impossible d’enregistrer le thème choisi.',
+                            ),
                           ),
                         ),
                       );
@@ -412,13 +419,56 @@ class _ProfileTabState extends State<ProfileTab> {
                   },
           ),
           const SizedBox(height: 12),
-          _field(_firstName, 'Prénom'),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(context.tr('Langue')),
+            trailing: DropdownButton<Locale>(
+              value: themeController?.locale.value ?? const Locale('fr'),
+              items: [
+                for (final locale in AppLocalizations.supportedLocales)
+                  DropdownMenuItem(
+                    value: locale,
+                    child: Text(
+                      context.tr(switch (locale.languageCode) {
+                        'en' => 'Anglais',
+                        'ar' => 'Arabe',
+                        _ => 'Français',
+                      }),
+                    ),
+                  ),
+              ],
+              onChanged: themeController == null
+                  ? null
+                  : (locale) async {
+                      if (locale == null) {
+                        return;
+                      }
+                      try {
+                        await themeController.setLocale(locale);
+                      } catch (_) {
+                        if (!mounted) {
+                          return;
+                        }
+                        messenger.showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              context.tr(
+                                'Impossible d’enregistrer la langue choisie.',
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+                    },
+            ),
+          ),
+          _field(_firstName, context.tr('Prénom')),
           const SizedBox(height: 12),
-          _field(_lastName, 'Nom'),
+          _field(_lastName, context.tr('Nom')),
           const SizedBox(height: 12),
-          _field(_phone, 'Téléphone'),
+          _field(_phone, context.tr('Téléphone')),
           const SizedBox(height: 18),
-          ..._roleFields(),
+          ..._roleFields(context),
           Text(
             email,
             style: TextStyle(
@@ -443,35 +493,42 @@ class _ProfileTabState extends State<ProfileTab> {
               ),
             ),
             onPressed: _loading ? null : _save,
-            child: Text(_loading ? 'Enregistrement...' : 'Enregistrer'),
+            child: Text(
+              _loading
+                  ? context.tr('Enregistrement...')
+                  : context.tr('Enregistrer'),
+            ),
           ),
           const SizedBox(height: 12),
           OutlinedButton(
             onPressed: _logout,
-            child: const Text('Se déconnecter'),
+            child: Text(context.tr('Se déconnecter')),
           ),
         ],
       ),
     );
   }
 
-  List<Widget> _roleFields() {
+  List<Widget> _roleFields(BuildContext context) {
     switch (_role) {
       case 'citoyen':
-        return [_field(_address, 'Adresse'), const SizedBox(height: 12)];
+        return [
+          _field(_address, context.tr('Adresse')),
+          const SizedBox(height: 12),
+        ];
       case 'benevole':
         return [
-          _field(_bio, 'Bio', maxLines: 3),
+          _field(_bio, context.tr('Bio'), maxLines: 3),
           const SizedBox(height: 12),
           _field(
             _maxMissions,
-            'Missions maximum',
+            context.tr('Missions maximum'),
             keyboard: TextInputType.number,
           ),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
             activeThumbColor: PawLogo.green,
-            title: const Text('Disponible pour une mission'),
+            title: Text(context.tr('Disponible pour une mission')),
             value: _available,
             onChanged: (value) => setState(() => _available = value),
           ),
@@ -479,21 +536,21 @@ class _ProfileTabState extends State<ProfileTab> {
         ];
       case 'veterinaire':
         return [
-          _field(_license, 'Numéro de licence'),
+          _field(_license, context.tr('Numéro de licence')),
           const SizedBox(height: 12),
-          _field(_address, 'Adresse'),
+          _field(_address, context.tr('Adresse')),
           const SizedBox(height: 12),
-          _field(_specialties, 'Spécialités', maxLines: 2),
+          _field(_specialties, context.tr('Spécialités'), maxLines: 2),
           const SizedBox(height: 12),
           _field(
             _radius,
-            'Rayon d\'intervention (km)',
+            context.tr('Rayon d\'intervention (km)'),
             keyboard: const TextInputType.numberWithOptions(decimal: true),
           ),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
             activeThumbColor: PawLogo.green,
-            title: const Text('Disponible'),
+            title: Text(context.tr('Disponible')),
             value: _available,
             onChanged: (value) => setState(() => _available = value),
           ),
@@ -501,15 +558,19 @@ class _ProfileTabState extends State<ProfileTab> {
         ];
       case 'refuge':
         return [
-          _field(_refugeName, 'Nom du refuge'),
+          _field(_refugeName, context.tr('Nom du refuge')),
           const SizedBox(height: 12),
-          _field(_address, 'Adresse'),
+          _field(_address, context.tr('Adresse')),
           const SizedBox(height: 12),
-          _field(_refugePhone, 'Téléphone du refuge'),
+          _field(_refugePhone, context.tr('Téléphone du refuge')),
           const SizedBox(height: 12),
-          _field(_description, 'Description', maxLines: 3),
+          _field(_description, context.tr('Description'), maxLines: 3),
           const SizedBox(height: 12),
-          _field(_capacity, 'Capacité', keyboard: TextInputType.number),
+          _field(
+            _capacity,
+            context.tr('Capacité'),
+            keyboard: TextInputType.number,
+          ),
           const SizedBox(height: 12),
           _field(
             _actionRadius,
@@ -551,7 +612,7 @@ class _ProfileTabState extends State<ProfileTab> {
         ],
       ),
       Align(
-        alignment: Alignment.centerLeft,
+        alignment: AlignmentDirectional.centerStart,
         child: TextButton.icon(
           onPressed: _locating ? null : _useMyPosition,
           icon: _locating

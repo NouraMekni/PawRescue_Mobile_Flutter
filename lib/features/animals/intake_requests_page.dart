@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
 import 'animal_api.dart';
 import 'animal_models.dart';
 
@@ -66,7 +67,7 @@ class _IntakeRequestsPageState extends State<IntakeRequestsPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Demandes de prise en charge'),
+        title: Text(context.tr('Demandes de prise en charge')),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         actions: [
           IconButton(onPressed: _loadRequests, icon: const Icon(Icons.refresh)),
@@ -91,7 +92,7 @@ class _IntakeRequestsPageState extends State<IntakeRequestsPage> {
               const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: _loadRequests,
-                child: const Text('Réessayer'),
+                child: Text(context.tr('Réessayer')),
               ),
             ],
           ),
@@ -99,19 +100,22 @@ class _IntakeRequestsPageState extends State<IntakeRequestsPage> {
       );
     }
     if (_requests.isEmpty) {
-      return const Center(child: Text('Aucune demande de prise en charge.'));
+      return Center(
+        child: Text(context.tr('Aucune demande de prise en charge.')),
+      );
     }
     return RefreshIndicator(
       onRefresh: _loadRequests,
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: _requests.length,
-        itemBuilder: (context, index) => _requestCard(_requests[index]),
+        itemBuilder: (context, index) =>
+            _requestCard(context, _requests[index]),
       ),
     );
   }
 
-  Widget _requestCard(AnimalIntakeRequest request) {
+  Widget _requestCard(BuildContext context, AnimalIntakeRequest request) {
     final isPending = request.status == 'pending';
     final isProcessing = _processing.contains(request.id);
     return Card(
@@ -121,7 +125,7 @@ class _IntakeRequestsPageState extends State<IntakeRequestsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _animalDetails(request.animalDetails),
+            _animalDetails(context, request.animalDetails),
             const SizedBox(height: 14),
             Text(
               request.animalName,
@@ -132,13 +136,24 @@ class _IntakeRequestsPageState extends State<IntakeRequestsPage> {
               Text(request.animalBreed),
             ],
             const SizedBox(height: 8),
-            Text('Demandeur : ${request.citizenName}'),
+            Text(
+              context
+                  .tr('Demandeur : {name}')
+                  .replaceAll('{name}', request.citizenName),
+            ),
             if (request.message.isNotEmpty) ...[
               const SizedBox(height: 8),
               Text(request.message),
             ],
             const SizedBox(height: 8),
-            Text('Statut : ${_statusLabel(request.status)}'),
+            Text(
+              context
+                  .tr('Statut : {status}')
+                  .replaceAll(
+                    '{status}',
+                    context.tr(_statusLabel(request.status)),
+                  ),
+            ),
             if (isPending) ...[
               const SizedBox(height: 12),
               Row(
@@ -148,7 +163,7 @@ class _IntakeRequestsPageState extends State<IntakeRequestsPage> {
                       onPressed: isProcessing
                           ? null
                           : () => _decide(request, false),
-                      child: const Text('Refuser'),
+                      child: Text(context.tr('Refuser')),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -163,7 +178,7 @@ class _IntakeRequestsPageState extends State<IntakeRequestsPage> {
                               height: 18,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : const Text('Accepter'),
+                          : Text(context.tr('Accepter')),
                     ),
                   ),
                 ],
@@ -175,7 +190,7 @@ class _IntakeRequestsPageState extends State<IntakeRequestsPage> {
     );
   }
 
-  Widget _animalDetails(Animal? animal) {
+  Widget _animalDetails(BuildContext context, Animal? animal) {
     if (animal == null) {
       return const SizedBox.shrink();
     }
@@ -227,19 +242,24 @@ class _IntakeRequestsPageState extends State<IntakeRequestsPage> {
           ),
         const SizedBox(height: 12),
         Text(
-          'Informations de l’animal',
+          context.tr('Informations de l’animal'),
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 8),
         for (final (label, value) in details)
           Padding(
             padding: const EdgeInsets.only(bottom: 5),
-            child: Text('$label : $value'),
+            child: Text(
+              context
+                  .tr('{label} : {value}')
+                  .replaceAll('{label}', context.tr(label))
+                  .replaceAll('{value}', context.tr(value)),
+            ),
           ),
         if (animal.behavior.trim().isNotEmpty) ...[
           const SizedBox(height: 6),
-          const Text(
-            'Comportement',
+          Text(
+            context.tr('Comportement'),
             style: TextStyle(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 3),
@@ -251,11 +271,14 @@ class _IntakeRequestsPageState extends State<IntakeRequestsPage> {
 
   String _ageLabel(int? ageMonths) {
     if (ageMonths == null) return '';
-    if (ageMonths < 12) return '$ageMonths mois';
+    if (ageMonths < 12) return '$ageMonths ${context.tr('mois')}';
     final years = ageMonths ~/ 12;
     final months = ageMonths % 12;
-    if (months == 0) return '$years an${years == 1 ? '' : 's'}';
-    return '$years an${years == 1 ? '' : 's'} et $months mois';
+    if (months == 0) {
+      return '$years ${context.tr(years == 1 ? 'an' : 'ans')}';
+    }
+    return '$years ${context.tr(years == 1 ? 'an' : 'ans')} '
+        '${context.tr('et')} $months ${context.tr('mois')}';
   }
 
   String _statusLabel(String status) => switch (status) {

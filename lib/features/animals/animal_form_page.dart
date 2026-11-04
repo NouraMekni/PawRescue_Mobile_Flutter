@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../auth/auth_api.dart';
 import 'animal_api.dart';
 import 'animal_models.dart';
@@ -100,13 +101,13 @@ class _AnimalFormPageState extends State<AnimalFormPage> {
       if (file == null) return;
       final extension = file.name.split('.').last.toLowerCase();
       if (!{'jpg', 'jpeg', 'png', 'webp'}.contains(extension)) {
-        _showError('Choisissez une image JPG, PNG ou WEBP.');
+        _showError(context.tr('Choisissez une image JPG, PNG ou WEBP.'));
         return;
       }
 
       final bytes = await file.readAsBytes();
       if (bytes.length > 8 * 1024 * 1024) {
-        _showError('La photo ne doit pas dépasser 8 Mo.');
+        _showError(context.tr('La photo ne doit pas dépasser 8 Mo.'));
         return;
       }
 
@@ -121,7 +122,9 @@ class _AnimalFormPageState extends State<AnimalFormPage> {
     } catch (_) {
       if (!mounted) return;
       _showError(
-        'Impossible de lire cette image. Choisissez un fichier JPG, PNG ou WEBP.',
+        context.tr(
+          'Impossible de lire cette image. Choisissez un fichier JPG, PNG ou WEBP.',
+        ),
       );
     }
   }
@@ -194,8 +197,11 @@ class _AnimalFormPageState extends State<AnimalFormPage> {
       if (!mounted) return;
       setState(() => _loading = false);
       _showError(
-        'Animal créé, mais la photo n’a pas été envoyée : $error. '
-        'Vous pouvez réessayer sans recréer l’animal.',
+        context
+            .tr(
+              'Animal créé, mais la photo n’a pas été envoyée : {error}. Vous pouvez réessayer sans recréer l’animal.',
+            )
+            .replaceAll('{error}', error.toString()),
       );
     }
   }
@@ -212,21 +218,21 @@ class _AnimalFormPageState extends State<AnimalFormPage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
-        title: const Text('Ajouter un animal'),
+        title: Text(context.tr('Ajouter un animal')),
       ),
       body: Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.all(18),
           children: [
-            _sectionTitle('Informations principales'),
+            _sectionTitle(context.tr('Informations principales')),
 
             const SizedBox(height: 15),
 
             _textField(
               controller: _nameController,
-              label: 'Nom',
-              hint: 'Ex. Luna',
+              label: context.tr('Nom'),
+              hint: context.tr('Ex. Luna'),
               icon: Icons.pets,
               required: true,
             ),
@@ -235,13 +241,12 @@ class _AnimalFormPageState extends State<AnimalFormPage> {
 
             if (_isCitizen) ...[
               const SizedBox(height: 12),
-              _sectionTitle('Prise en charge (facultatif)'),
+              _sectionTitle(context.tr('Prise en charge (facultatif)')),
               const SizedBox(height: 8),
-              const Text(
-                'Vous pouvez enregistrer votre animal sans refuge. '
-                'Si vous souhaitez le proposer à l’adoption, choisissez '
-                'un refuge : il devra accepter la prise en charge avant '
-                'que l’animal puisse être proposé à l’adoption.',
+              Text(
+                context.tr(
+                  'Vous pouvez enregistrer votre animal sans refuge. Si vous souhaitez le proposer à l’adoption, choisissez un refuge : il devra accepter la prise en charge avant que l’animal puisse être proposé à l’adoption.',
+                ),
                 style: TextStyle(color: Color(0xFF5B6470), height: 1.4),
               ),
               const SizedBox(height: 12),
@@ -250,10 +255,10 @@ class _AnimalFormPageState extends State<AnimalFormPage> {
               else if (_optionsError != null)
                 _buildOptionsError()
               else if (_refuges.isEmpty)
-                _buildEmptyOptions('Aucun refuge n’est disponible.')
+                _buildEmptyOptions(context.tr('Aucun refuge n’est disponible.'))
               else
                 _buildLookupDropdown(
-                  label: 'Refuge à contacter',
+                  label: context.tr('Refuge à contacter'),
                   icon: Icons.home_outlined,
                   options: _refuges,
                   value: _refugeId,
@@ -264,8 +269,8 @@ class _AnimalFormPageState extends State<AnimalFormPage> {
 
             _textField(
               controller: _breedController,
-              label: 'Race',
-              hint: 'Ex. Berger allemand',
+              label: context.tr('Race'),
+              hint: context.tr('Ex. Berger allemand'),
               icon: Icons.pets_outlined,
             ),
 
@@ -273,15 +278,15 @@ class _AnimalFormPageState extends State<AnimalFormPage> {
 
             _textField(
               controller: _ageController,
-              label: 'Âge estimé en mois',
-              hint: 'Ex. 24',
+              label: context.tr('Âge estimé en mois'),
+              hint: context.tr('Ex. 24'),
               icon: Icons.cake_outlined,
               keyboardType: TextInputType.number,
             ),
 
             const SizedBox(height: 20),
 
-            _sectionTitle('Caractéristiques'),
+            _sectionTitle(context.tr('Caractéristiques')),
 
             const SizedBox(height: 15),
 
@@ -295,8 +300,8 @@ class _AnimalFormPageState extends State<AnimalFormPage> {
 
             _textField(
               controller: _weightController,
-              label: 'Poids en kg',
-              hint: 'Ex. 12.5',
+              label: context.tr('Poids en kg'),
+              hint: context.tr('Ex. 12.5'),
               icon: Icons.monitor_weight_outlined,
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
@@ -307,19 +312,21 @@ class _AnimalFormPageState extends State<AnimalFormPage> {
 
             _textField(
               controller: _colorController,
-              label: 'Couleur',
-              hint: 'Ex. Marron et blanc',
+              label: context.tr('Couleur'),
+              hint: context.tr('Ex. Marron et blanc'),
               icon: Icons.palette_outlined,
             ),
 
             const SizedBox(height: 20),
 
-            _sectionTitle('Photo de l’animal'),
+            _sectionTitle(context.tr('Photo de l’animal')),
             const SizedBox(height: 12),
             OutlinedButton.icon(
               onPressed: _loading ? null : _pickPhoto,
               icon: const Icon(Icons.add_a_photo_outlined),
-              label: Text(_photoName ?? 'Ajouter une photo (facultatif)'),
+              label: Text(
+                _photoName ?? context.tr('Ajouter une photo (facultatif)'),
+              ),
             ),
             if (_photoBytes != null) ...[
               const SizedBox(height: 12),
@@ -333,7 +340,7 @@ class _AnimalFormPageState extends State<AnimalFormPage> {
                     height: 180,
                     alignment: Alignment.center,
                     color: const Color(0xFFE9EEEA),
-                    child: const Text('Aperçu de la photo indisponible'),
+                    child: Text(context.tr('Aperçu de la photo indisponible')),
                   ),
                 ),
               ),
@@ -341,7 +348,7 @@ class _AnimalFormPageState extends State<AnimalFormPage> {
 
             const SizedBox(height: 20),
 
-            _sectionTitle('Comportement'),
+            _sectionTitle(context.tr('Comportement')),
 
             const SizedBox(height: 15),
 
@@ -350,8 +357,8 @@ class _AnimalFormPageState extends State<AnimalFormPage> {
               minLines: 4,
               maxLines: 7,
               decoration: InputDecoration(
-                labelText: 'Comportement',
-                hintText: 'Décrivez le comportement de l’animal...',
+                labelText: context.tr('Comportement'),
+                hintText: context.tr('Décrivez le comportement de l’animal...'),
                 alignLabelWithHint: true,
                 prefixIcon: const Padding(
                   padding: EdgeInsets.only(bottom: 70),
@@ -385,12 +392,12 @@ class _AnimalFormPageState extends State<AnimalFormPage> {
                     : const Icon(Icons.add),
                 label: Text(
                   _loading
-                      ? 'Ajout en cours...'
+                      ? context.tr('Ajout en cours...')
                       : _createdAnimal != null && _photoBytes != null
-                      ? 'Réessayer l’envoi de la photo'
+                      ? context.tr('Réessayer l’envoi de la photo')
                       : _createdAnimal != null
-                      ? 'Terminer'
-                      : 'Ajouter l’animal',
+                      ? context.tr('Terminer')
+                      : context.tr('Ajouter l’animal'),
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -405,7 +412,7 @@ class _AnimalFormPageState extends State<AnimalFormPage> {
                 onPressed: _loading
                     ? null
                     : () => Navigator.pop(context, _createdAnimal),
-                child: const Text('Continuer sans photo'),
+                child: Text(context.tr('Continuer sans photo')),
               ),
             ],
 
@@ -442,9 +449,9 @@ class _AnimalFormPageState extends State<AnimalFormPage> {
       ),
       items: [
         if (optional)
-          const DropdownMenuItem<int>(
+          DropdownMenuItem<int>(
             value: -1,
-            child: Text('Aucun refuge pour le moment'),
+            child: Text(context.tr('Aucun refuge pour le moment')),
           ),
         ...options.map(
           (option) =>
@@ -456,7 +463,11 @@ class _AnimalFormPageState extends State<AnimalFormPage> {
           : null,
       validator: optional
           ? null
-          : (selected) => selected == null ? 'Sélectionnez $label' : null,
+          : (selected) => selected == null
+                ? context
+                      .tr('Sélectionnez {field}')
+                      .replaceAll('{field}', label)
+                : null,
     );
   }
 
@@ -465,13 +476,15 @@ class _AnimalFormPageState extends State<AnimalFormPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Impossible de charger les refuges : $_optionsError',
+          context
+              .tr('Impossible de charger les refuges : {error}')
+              .replaceAll('{error}', _optionsError ?? ''),
           style: const TextStyle(color: Colors.red),
         ),
         TextButton.icon(
           onPressed: _loadOptions,
           icon: const Icon(Icons.refresh),
-          label: const Text('Réessayer'),
+          label: Text(context.tr('Réessayer')),
         ),
       ],
     );
@@ -513,7 +526,9 @@ class _AnimalFormPageState extends State<AnimalFormPage> {
       validator: required
           ? (value) {
               if (value == null || value.trim().isEmpty) {
-                return '$label est obligatoire';
+                return context
+                    .tr('{field} est obligatoire')
+                    .replaceAll('{field}', label);
               }
 
               return null;
@@ -526,7 +541,7 @@ class _AnimalFormPageState extends State<AnimalFormPage> {
     return DropdownButtonFormField<String>(
       initialValue: _sex,
       decoration: InputDecoration(
-        labelText: 'Sexe',
+        labelText: context.tr('Sexe'),
         prefixIcon: const Icon(Icons.male),
         filled: true,
         fillColor: Theme.of(context).colorScheme.surface,
@@ -535,10 +550,10 @@ class _AnimalFormPageState extends State<AnimalFormPage> {
           borderSide: BorderSide.none,
         ),
       ),
-      items: const [
-        DropdownMenuItem(value: 'unknown', child: Text('Inconnu')),
-        DropdownMenuItem(value: 'M', child: Text('Mâle')),
-        DropdownMenuItem(value: 'F', child: Text('Femelle')),
+      items: [
+        DropdownMenuItem(value: 'unknown', child: Text(context.tr('Inconnu'))),
+        DropdownMenuItem(value: 'M', child: Text(context.tr('Mâle'))),
+        DropdownMenuItem(value: 'F', child: Text(context.tr('Femelle'))),
       ],
       onChanged: (value) {
         if (value == null) return;
@@ -554,7 +569,7 @@ class _AnimalFormPageState extends State<AnimalFormPage> {
     return DropdownButtonFormField<String>(
       initialValue: _size,
       decoration: InputDecoration(
-        labelText: 'Taille',
+        labelText: context.tr('Taille'),
         prefixIcon: const Icon(Icons.straighten),
         filled: true,
         fillColor: Theme.of(context).colorScheme.surface,
@@ -563,11 +578,11 @@ class _AnimalFormPageState extends State<AnimalFormPage> {
           borderSide: BorderSide.none,
         ),
       ),
-      items: const [
-        DropdownMenuItem(value: '', child: Text('Non précisée')),
-        DropdownMenuItem(value: 'small', child: Text('Petit')),
-        DropdownMenuItem(value: 'medium', child: Text('Moyen')),
-        DropdownMenuItem(value: 'large', child: Text('Grand')),
+      items: [
+        DropdownMenuItem(value: '', child: Text(context.tr('Non précisée'))),
+        DropdownMenuItem(value: 'small', child: Text(context.tr('Petit'))),
+        DropdownMenuItem(value: 'medium', child: Text(context.tr('Moyen'))),
+        DropdownMenuItem(value: 'large', child: Text(context.tr('Grand'))),
       ],
       onChanged: (value) {
         if (value == null) return;
@@ -581,18 +596,20 @@ class _AnimalFormPageState extends State<AnimalFormPage> {
 
   Widget _buildAdoptionSwitch() {
     return Material(
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       borderRadius: BorderRadius.circular(14),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
         child: SwitchListTile(
           contentPadding: EdgeInsets.zero,
-          title: const Text(
-            'Proposer à l’adoption',
+          title: Text(
+            context.tr('Proposer à l’adoption'),
             style: TextStyle(fontWeight: FontWeight.w600),
           ),
-          subtitle: const Text(
-            'L’animal apparaîtra dans la liste des animaux adoptables.',
+          subtitle: Text(
+            context.tr(
+              'L’animal apparaîtra dans la liste des animaux adoptables.',
+            ),
           ),
           value: _isAdoptable,
           onChanged: (value) {

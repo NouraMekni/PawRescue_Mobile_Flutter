@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../adoptions/adoption_models.dart';
 import '../adoptions/adoption_request_page.dart';
 import '../auth/auth_api.dart';
@@ -70,7 +71,9 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
 
       setState(() {
         _loading = false;
-        _error = 'Impossible de charger les informations de l’animal.';
+        _error = context.tr(
+          'Impossible de charger les informations de l’animal.',
+        );
       });
     }
   }
@@ -105,7 +108,7 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
       if (!mounted) return;
       if (refuges.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Aucun refuge n’est disponible.')),
+          SnackBar(content: Text(context.tr('Aucun refuge n’est disponible.'))),
         );
         setState(() => _actionLoading = false);
         return;
@@ -113,7 +116,7 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
       final refugeId = await showDialog<int>(
         context: context,
         builder: (dialogContext) => AlertDialog(
-          title: const Text('Choisir un refuge'),
+          title: Text(context.tr('Choisir un refuge')),
           content: SizedBox(
             width: double.maxFinite,
             height: 300,
@@ -132,7 +135,7 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Annuler'),
+              child: Text(context.tr('Annuler')),
             ),
           ],
         ),
@@ -150,7 +153,7 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
       if (!mounted) return;
       setState(() => _actionLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Demande envoyée au refuge.')),
+        SnackBar(content: Text(context.tr('Demande envoyée au refuge.'))),
       );
     } on AnimalApiException catch (error) {
       if (!mounted) return;
@@ -171,7 +174,7 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
       if (!mounted) return;
       setState(() => _animal = updated);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Animal publié pour adoption.')),
+        SnackBar(content: Text(context.tr('Animal publié pour adoption.'))),
       );
     } on AnimalApiException catch (error) {
       if (!mounted) return;
@@ -196,8 +199,8 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
 
     if (result != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Votre demande d’adoption a été envoyée.'),
+        SnackBar(
+          content: Text(context.tr('Votre demande d’adoption a été envoyée.')),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -218,7 +221,7 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
           IconButton(
             onPressed: _loading ? null : _loadAnimal,
             icon: const Icon(Icons.refresh),
-            tooltip: 'Actualiser',
+            tooltip: context.tr('Actualiser'),
           ),
         ],
       ),
@@ -250,7 +253,7 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
               ElevatedButton.icon(
                 onPressed: _loadAnimal,
                 icon: const Icon(Icons.refresh),
-                label: const Text('Réessayer'),
+                label: Text(context.tr('Réessayer')),
               ),
             ],
           ),
@@ -282,15 +285,17 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
                   const SizedBox(height: 6),
                   Text(
                     _animal.breed.isEmpty
-                        ? 'Race non précisée'
-                        : 'Race : ${_animal.breed}',
+                        ? context.tr('Race non précisée')
+                        : context
+                              .tr('Race : {value}')
+                              .replaceAll('{value}', _animal.breed),
                     style: TextStyle(fontSize: 17, color: Colors.grey.shade700),
                   ),
                   const SizedBox(height: 20),
                   _buildInfoGrid(),
                   if (_animal.behavior.isNotEmpty) ...[
                     const SizedBox(height: 25),
-                    _sectionTitle('Comportement'),
+                    _sectionTitle(context.tr('Comportement')),
                     const SizedBox(height: 8),
                     Text(
                       _animal.behavior,
@@ -299,7 +304,7 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
                   ],
                   if (_animal.refugeName.isNotEmpty) ...[
                     const SizedBox(height: 25),
-                    _sectionTitle('Refuge'),
+                    _sectionTitle(context.tr('Refuge')),
                     const SizedBox(height: 8),
                     Row(
                       children: [
@@ -395,7 +400,7 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
                     : _animal.sex == 'F'
                     ? Icons.female
                     : Icons.pets,
-                'Sexe',
+                context.tr('Sexe'),
                 _animal.sexDisplay.isEmpty ? _animal.sex : _animal.sexDisplay,
               ),
             ),
@@ -403,8 +408,10 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
             Expanded(
               child: _infoCard(
                 Icons.straighten,
-                'Taille',
-                _animal.size.isEmpty ? 'Non précisée' : _animal.size,
+                context.tr('Taille'),
+                _animal.size.isEmpty
+                    ? context.tr('Non précisée')
+                    : context.tr(_animal.size),
               ),
             ),
           ],
@@ -412,14 +419,20 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
         const SizedBox(height: 10),
         Row(
           children: [
-            Expanded(child: _infoCard(Icons.cake_outlined, 'Âge', _ageText())),
+            Expanded(
+              child: _infoCard(
+                Icons.cake_outlined,
+                context.tr('Âge'),
+                _ageText(),
+              ),
+            ),
             const SizedBox(width: 10),
             Expanded(
               child: _infoCard(
                 Icons.monitor_weight_outlined,
-                'Poids',
+                context.tr('Poids'),
                 _animal.weightKg == null
-                    ? 'Non précisé'
+                    ? context.tr('Non précisé')
                     : '${_animal.weightKg} kg',
               ),
             ),
@@ -427,7 +440,11 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
         ),
         if (_animal.color.isNotEmpty) ...[
           const SizedBox(height: 10),
-          _infoCard(Icons.palette_outlined, 'Couleur', _animal.color),
+          _infoCard(
+            Icons.palette_outlined,
+            context.tr('Couleur'),
+            _animal.color,
+          ),
         ],
       ],
     );
@@ -437,29 +454,29 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
     final months = _animal.estimatedAgeMonths;
 
     if (months == null) {
-      return 'Non précisé';
+      return context.tr('Non précisé');
     }
 
     if (months < 12) {
-      return '$months mois';
+      return '$months ${context.tr('mois')}';
     }
 
     final years = months ~/ 12;
     final remainingMonths = months % 12;
 
     if (remainingMonths == 0) {
-      return '$years an${years > 1 ? 's' : ''}';
+      return '$years ${context.tr(years > 1 ? 'ans' : 'an')}';
     }
 
-    return '$years an${years > 1 ? 's' : ''} '
-        'et $remainingMonths mois';
+    return '$years ${context.tr(years > 1 ? 'ans' : 'an')} '
+        '${context.tr('et')} $remainingMonths ${context.tr('mois')}';
   }
 
   Widget _infoCard(IconData icon, String title, String value) {
     return Container(
       padding: const EdgeInsets.all(13),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
@@ -499,11 +516,17 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
     final status = _animal.intakeRequestStatus;
     final label = switch (status) {
       'pending' =>
-        'Demande envoyée à ${_animal.intakeRefugeName ?? 'un refuge'} — en attente',
-      'accepted' => 'Le refuge a accepté la prise en charge.',
-      'rejected' =>
+        context
+            .tr('Demande envoyée à {name} — en attente')
+            .replaceAll(
+              '{name}',
+              _animal.intakeRefugeName ?? context.tr('un refuge'),
+            ),
+      'accepted' => context.tr('Le refuge a accepté la prise en charge.'),
+      'rejected' => context.tr(
         'La demande a été refusée. Vous pouvez en contacter un autre.',
-      _ => 'Aucune demande de prise en charge.',
+      ),
+      _ => context.tr('Aucune demande de prise en charge.'),
     };
     return Text(label, style: const TextStyle(fontWeight: FontWeight.w500));
   }
@@ -530,7 +553,7 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(15),
       ),
       child: Row(
@@ -539,7 +562,9 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'Statut : $statusText',
+              context
+                  .tr('Statut : {value}')
+                  .replaceAll('{value}', context.tr(statusText)),
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
@@ -549,14 +574,18 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
   }
 
   Widget _buildNotAvailableMessage() {
-    String message = 'Cet animal n’est pas disponible à l’adoption.';
+    String message = context.tr(
+      'Cet animal n’est pas disponible à l’adoption.',
+    );
 
     if (_animal.status == 'reserved') {
-      message = 'Cet animal est actuellement réservé.';
+      message = context.tr('Cet animal est actuellement réservé.');
     } else if (_animal.status == 'stray') {
-      message = 'Cet animal est actuellement signalé comme errant.';
+      message = context.tr('Cet animal est actuellement signalé comme errant.');
     } else if (_animal.status == 'rescued') {
-      message = 'Cet animal est encore en cours de prise en charge.';
+      message = context.tr(
+        'Cet animal est encore en cours de prise en charge.',
+      );
     }
 
     return Container(
@@ -597,7 +626,7 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(Icons.home_work_outlined),
-              label: const Text('Demander l’aide d’un refuge'),
+              label: Text(context.tr('Demander l’aide d’un refuge')),
             ),
           ),
         ),
@@ -612,7 +641,7 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
             child: ElevatedButton.icon(
               onPressed: _actionLoading ? null : _publishForAdoption,
               icon: const Icon(Icons.favorite_border),
-              label: const Text('Proposer à l’adoption'),
+              label: Text(context.tr('Proposer à l’adoption')),
             ),
           ),
         ),
@@ -630,8 +659,8 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
           child: ElevatedButton.icon(
             onPressed: _requestAdoption,
             icon: const Icon(Icons.favorite_border),
-            label: const Text(
-              'Demander l’adoption',
+            label: Text(
+              context.tr('Demander l’adoption'),
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),

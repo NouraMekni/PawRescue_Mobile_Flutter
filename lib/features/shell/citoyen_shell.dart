@@ -9,6 +9,7 @@ import '../reports/citoyen_home_page.dart';
 import 'placeholder_tab.dart';
 import 'profile_tab.dart';
 import '../animals/animals_page.dart';
+import '../../l10n/app_localizations.dart';
 
 class PawShell extends StatefulWidget {
   const PawShell({super.key, required this.session, required this.authApi});
@@ -42,18 +43,20 @@ class _PawShellState extends State<PawShell> {
         index: _index,
         children: [
           _home(),
-          const PlaceholderTab(
-            title: 'Urgences',
+          PlaceholderTab(
+            title: context.tr('Urgences'),
             icon: Icons.emergency,
-            message:
-                'Les animaux blessés à traiter en priorité apparaîtront ici.',
+            message: context.tr(
+              'Les animaux blessés à traiter en priorité apparaîtront ici.',
+            ),
           ),
           AnimalsPage(session: widget.session, authApi: widget.authApi),
-          const PlaceholderTab(
-            title: 'Carte',
+          PlaceholderTab(
+            title: context.tr('Carte'),
             icon: Icons.map,
-            message:
-                'La carte montrera l’emplacement de tous les animaux signalés.',
+            message: context.tr(
+              'La carte montrera l’emplacement de tous les animaux signalés.',
+            ),
           ),
           MessagesPage(session: widget.session, authApi: widget.authApi),
           NotificationsPage(
@@ -112,20 +115,22 @@ class RoleHomePage extends StatelessWidget {
         padding: const EdgeInsets.all(24),
         children: [
           Text(
-            firstName.isEmpty ? 'Bonjour' : 'Bonjour $firstName',
+            firstName.isEmpty
+                ? context.tr('Bonjour')
+                : '${context.tr('Bonjour')} $firstName',
             style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 8),
           Text(
-            roleLabel(user['role']?.toString()),
+            context.tr(roleLabel(user['role']?.toString())),
             style: const TextStyle(
               color: PawLogo.green,
               fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Complétez votre profil depuis l’onglet Profil.',
+          Text(
+            context.tr('Complétez votre profil depuis l’onglet Profil.'),
             style: TextStyle(fontSize: 16, height: 1.4),
           ),
           if (user['role'] == 'benevole') ...[
@@ -181,7 +186,11 @@ class _PawBar extends StatelessWidget {
                 for (var i = 0; i < _PawShellState._tabs.length; i++)
                   Expanded(
                     child: _PawBarItem(
-                      tab: _PawShellState._tabs[i],
+                      tab: _Tab(
+                        context.tr(_PawShellState._tabs[i].label),
+                        _PawShellState._tabs[i].icon,
+                        _PawShellState._tabs[i].selectedIcon,
+                      ),
                       selected: index == i,
                       showBadge: i == 5 && unreadNotifications > 0,
                       onTap: () => onSelected(i),

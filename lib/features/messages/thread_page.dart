@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../core/api_client.dart';
+import '../../l10n/app_localizations.dart';
 import '../auth/auth_api.dart';
 import '../auth/paw_logo.dart';
 import 'messages_api.dart';
@@ -145,10 +146,11 @@ class _ThreadPageState extends State<ThreadPage> {
     final needsResponse = conversation?['needs_response'] == true;
     final role = widget.session.user['role'];
     final title = role == 'refuge' || role == 'veterinaire'
-        ? (conversation?['participant_name'] ?? 'Messages').toString()
+        ? (conversation?['participant_name'] ?? context.tr('Messages'))
+              .toString()
         : ((conversation?['refuge_name'] ??
                       conversation?['veterinaire_name']) ??
-                  'Messages')
+                  context.tr('Messages'))
               .toString();
     final photo = (conversation?['photo'] ?? '').toString();
     return PopScope(
@@ -209,7 +211,9 @@ class _ThreadPageState extends State<ThreadPage> {
   Widget _bubble(Map<String, dynamic> message) {
     final mine = message['sender'] == widget.session.user['id'];
     return Align(
-      alignment: mine ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: mine
+          ? AlignmentDirectional.centerEnd
+          : AlignmentDirectional.centerStart,
       child: Container(
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -235,7 +239,9 @@ class _ThreadPageState extends State<ThreadPage> {
     if (needsResponse) {
       return _panel(
         children: [
-          const Text('Acceptez pour répondre, ou bloquez cette personne.'),
+          Text(
+            context.tr('Acceptez pour répondre, ou bloquez cette personne.'),
+          ),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -243,14 +249,14 @@ class _ThreadPageState extends State<ThreadPage> {
                 child: FilledButton(
                   style: FilledButton.styleFrom(backgroundColor: PawLogo.green),
                   onPressed: _sending ? null : _accept,
-                  child: const Text('Accepter'),
+                  child: Text(context.tr('Accepter')),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: OutlinedButton(
                   onPressed: _sending ? null : _block,
-                  child: const Text('Bloquer'),
+                  child: Text(context.tr('Bloquer')),
                 ),
               ),
             ],
@@ -259,11 +265,11 @@ class _ThreadPageState extends State<ThreadPage> {
       );
     }
     if (status == 'pending') {
-      return _panel(children: const [Text('En attente d\'acceptation.')]);
+      return _panel(children: [Text(context.tr('En attente d\'acceptation.'))]);
     }
     if (status == 'blocked') {
       return _panel(
-        children: const [Text('Vous ne pouvez pas envoyer de message.')],
+        children: [Text(context.tr('Vous ne pouvez pas envoyer de message.'))],
       );
     }
     return _panel(
@@ -273,8 +279,8 @@ class _ThreadPageState extends State<ThreadPage> {
             Expanded(
               child: TextField(
                 controller: _body,
-                decoration: const InputDecoration(
-                  hintText: 'Votre message',
+                decoration: InputDecoration(
+                  hintText: context.tr('Votre message'),
                   border: OutlineInputBorder(),
                 ),
               ),

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../core/api_client.dart';
+import '../../l10n/app_localizations.dart';
 import '../auth/auth_api.dart';
 import '../auth/paw_logo.dart';
 import 'compose_page.dart';
@@ -73,7 +74,7 @@ class _MessagesPageState extends State<MessagesPage> {
         return;
       }
       setState(() {
-        _error = 'Impossible de joindre le serveur.';
+        _error = context.tr('Impossible de joindre le serveur.');
         _loading = false;
       });
     }
@@ -112,8 +113,8 @@ class _MessagesPageState extends State<MessagesPage> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         elevation: 0,
-        title: const Text(
-          'Messages',
+        title: Text(
+          context.tr('Messages'),
           style: TextStyle(fontWeight: FontWeight.w800),
         ),
         actions: [
@@ -121,7 +122,7 @@ class _MessagesPageState extends State<MessagesPage> {
             IconButton(
               onPressed: _compose,
               icon: const Icon(Icons.edit_outlined),
-              tooltip: 'Nouveau message',
+              tooltip: context.tr('Nouveau message'),
             ),
         ],
       ),
@@ -132,7 +133,7 @@ class _MessagesPageState extends State<MessagesPage> {
               child: Text(_error!, style: const TextStyle(color: Colors.red)),
             )
           : _items.isEmpty
-          ? const Center(child: Text('Aucune conversation.'))
+          ? Center(child: Text(context.tr('Aucune conversation.')))
           : RefreshIndicator(
               color: PawLogo.green,
               onRefresh: _load,
@@ -167,7 +168,7 @@ class _MessagesPageState extends State<MessagesPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    _title(item),
+                                    _title(item, context),
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w800,
                                       fontSize: 16,
@@ -176,7 +177,7 @@ class _MessagesPageState extends State<MessagesPage> {
                                   const SizedBox(height: 4),
                                   Text(
                                     preview.isEmpty
-                                        ? _statusLabel(item)
+                                        ? context.tr(_statusLabel(item))
                                         : preview,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
@@ -191,7 +192,9 @@ class _MessagesPageState extends State<MessagesPage> {
                             ),
                             if (item['needs_response'] == true)
                               Container(
-                                margin: const EdgeInsets.only(left: 8),
+                                margin: const EdgeInsetsDirectional.only(
+                                  start: 8,
+                                ),
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 10,
                                   vertical: 6,
@@ -200,8 +203,8 @@ class _MessagesPageState extends State<MessagesPage> {
                                   color: const Color(0xFFE7F5EC),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: const Text(
-                                  'Demande',
+                                child: Text(
+                                  context.tr('Demande'),
                                   style: TextStyle(
                                     color: PawLogo.green,
                                     fontWeight: FontWeight.w800,
@@ -219,10 +222,11 @@ class _MessagesPageState extends State<MessagesPage> {
     );
   }
 
-  String _title(Map<String, dynamic> item) {
+  String _title(Map<String, dynamic> item, BuildContext context) {
     final role = widget.session.user['role'];
     if (role == 'refuge' || role == 'veterinaire') {
-      return (item['participant_name'] ?? 'Conversation').toString();
+      return (item['participant_name'] ?? context.tr('Conversation'))
+          .toString();
     }
     final refugeName = item['refuge_name']?.toString();
     if (refugeName != null && refugeName.isNotEmpty && refugeName != 'null') {

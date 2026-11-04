@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../core/api_client.dart';
 import 'auth_api.dart';
 import 'paw_logo.dart';
@@ -89,7 +90,11 @@ class _RefugeInfoPageState extends State<RefugeInfoPage> {
 
   Future<void> _submit() async {
     if (!_complete) {
-      setState(() => _error = 'Remplissez les champs obligatoires et le justificatif.');
+      setState(
+        () => _error = context.tr(
+          'Remplissez les champs obligatoires et le justificatif.',
+        ),
+      );
       return;
     }
 
@@ -126,7 +131,7 @@ class _RefugeInfoPageState extends State<RefugeInfoPage> {
     } on ApiException catch (error) {
       setState(() => _error = error.message);
     } catch (_) {
-      setState(() => _error = 'Impossible de joindre le serveur.');
+      setState(() => _error = context.tr('Impossible de joindre le serveur.'));
     } finally {
       if (mounted) {
         setState(() => _loading = false);
@@ -138,77 +143,90 @@ class _RefugeInfoPageState extends State<RefugeInfoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        elevation: 0,
-        foregroundColor: const Color(0xFF243028),
-      ),
+      appBar: AppBar(elevation: 0, foregroundColor: const Color(0xFF243028)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
         children: [
-          const Text(
-            'Vérification de l’organisation',
+          Text(
+            context.tr('Vérification de l’organisation'),
             style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Ces informations seront vérifiées par un administrateur.',
+          Text(
+            context.tr(
+              'Ces informations seront vérifiées par un administrateur.',
+            ),
             style: TextStyle(color: Color(0xFF6E7872), fontSize: 15),
           ),
           const SizedBox(height: 20),
-          _label('Nom officiel de l’organisation'),
+          _label(context.tr('Nom officiel de l’organisation')),
           TextField(
             controller: _name,
             decoration: InputDecoration(
-              hintText: 'Nom du refuge ou de l’association',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              hintText: context.tr('Nom du refuge ou de l’association'),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
           const SizedBox(height: 14),
-          _label('Type de structure'),
+          _label(context.tr('Type de structure')),
           DropdownButtonFormField<String>(
             initialValue: _structure,
-            hint: const Text('Sélectionnez un type de structure'),
+            hint: Text(context.tr('Sélectionnez un type de structure')),
             items: refugeStructures
                 .map((name) => DropdownMenuItem(value: name, child: Text(name)))
                 .toList(),
-            onChanged: _loading ? null : (value) => setState(() => _structure = value),
+            onChanged: _loading
+                ? null
+                : (value) => setState(() => _structure = value),
             decoration: InputDecoration(
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
           const SizedBox(height: 14),
-          _label('Numéro RNE'),
+          _label(context.tr('Numéro RNE')),
           TextField(
             controller: _rne,
             decoration: InputDecoration(
-              hintText: 'Ex. 1234567A',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              hintText: context.tr('Ex. 1234567A'),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
           const SizedBox(height: 14),
-          _label('Gouvernorat'),
+          _label(context.tr('Gouvernorat')),
           DropdownButtonFormField<String>(
             initialValue: _governorate,
-            hint: const Text('Sélectionnez un gouvernorat'),
+            hint: Text(context.tr('Sélectionnez un gouvernorat')),
             items: tunisianGovernorates
                 .map((name) => DropdownMenuItem(value: name, child: Text(name)))
                 .toList(),
-            onChanged: _loading ? null : (value) => setState(() => _governorate = value),
+            onChanged: _loading
+                ? null
+                : (value) => setState(() => _governorate = value),
             decoration: InputDecoration(
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
           const SizedBox(height: 14),
-          _label('Adresse du siège'),
+          _label(context.tr('Adresse du siège')),
           TextField(
             controller: _address,
             decoration: InputDecoration(
-              hintText: 'Adresse complète',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              hintText: context.tr('Adresse complète'),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
           const SizedBox(height: 14),
-          _label('Téléphone'),
+          _label(context.tr('Téléphone')),
           TextField(
             controller: _phone,
             keyboardType: TextInputType.phone,
@@ -216,40 +234,51 @@ class _RefugeInfoPageState extends State<RefugeInfoPage> {
             decoration: InputDecoration(
               prefixText: '+216 ',
               hintText: '98 765 432',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
           const SizedBox(height: 14),
-          _label('Email officiel'),
+          _label(context.tr('Email officiel')),
           TextField(
             controller: _officialEmail,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
               hintText: 'contact@organisation.tn',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
           const SizedBox(height: 14),
-          _label('Nom du représentant légal'),
+          _label(context.tr('Nom du représentant légal')),
           TextField(
             controller: _representative,
             decoration: InputDecoration(
-              hintText: 'Nom et prénom',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              hintText: context.tr('Nom et prénom'),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
           const SizedBox(height: 14),
-          _label('Justificatif officiel'),
+          _label(context.tr('Justificatif officiel')),
           OutlinedButton.icon(
             onPressed: _loading ? null : _pickDocument,
             icon: const Icon(Icons.upload_outlined, color: PawLogo.green),
             label: Text(
-              _documentName ?? 'Télécharger un document\nPDF, JPG ou PNG (Max 5 Mo)',
+              _documentName ??
+                  context.tr(
+                    'Télécharger un document\nPDF, JPG ou PNG (Max 5 Mo)',
+                  ),
             ),
           ),
           const SizedBox(height: 12),
-          const Text(
-            'Votre compte sera activé après validation par l’équipe PawRescue.',
+          Text(
+            context.tr(
+              'Votre compte sera activé après validation par l’équipe PawRescue.',
+            ),
             style: TextStyle(color: Color(0xFF6E7872)),
           ),
           if (_error != null) ...[
@@ -263,9 +292,15 @@ class _RefugeInfoPageState extends State<RefugeInfoPage> {
               onPressed: _loading ? null : _submit,
               style: FilledButton.styleFrom(
                 backgroundColor: PawLogo.green,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
-              child: Text(_loading ? 'Envoi...' : 'Soumettre pour vérification'),
+              child: Text(
+                _loading
+                    ? context.tr('Envoi...')
+                    : context.tr('Soumettre pour vérification'),
+              ),
             ),
           ),
         ],
@@ -280,7 +315,10 @@ class _RefugeInfoPageState extends State<RefugeInfoPage> {
         TextSpan(
           text: text,
           children: const [
-            TextSpan(text: ' *', style: TextStyle(color: Colors.red)),
+            TextSpan(
+              text: ' *',
+              style: TextStyle(color: Colors.red),
+            ),
           ],
         ),
       ),

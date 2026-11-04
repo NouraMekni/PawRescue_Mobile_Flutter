@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../core/api_client.dart';
+import '../../l10n/app_localizations.dart';
 import '../auth/auth_api.dart';
 import '../auth/paw_logo.dart';
 import '../messages/messages_api.dart';
@@ -91,7 +92,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
         return;
       }
       setState(() {
-        _error = 'Impossible de joindre le serveur.';
+        _error = context.tr('Impossible de joindre le serveur.');
         _loading = false;
       });
     }
@@ -145,8 +146,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         elevation: 0,
-        title: const Text(
-          'Notifications',
+        title: Text(
+          context.tr('Notifications'),
           style: TextStyle(fontWeight: FontWeight.w800),
         ),
       ),
@@ -157,7 +158,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
               child: Text(_error!, style: const TextStyle(color: Colors.red)),
             )
           : _items.isEmpty
-          ? const Center(child: Text('Aucune notification.'))
+          ? Center(child: Text(context.tr('Aucune notification.')))
           : RefreshIndicator(
               color: PawLogo.green,
               onRefresh: _load,

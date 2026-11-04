@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
 import 'auth_api.dart';
 import 'paw_logo.dart';
 import 'role_page.dart';
@@ -35,7 +36,7 @@ class _RegisterPageState extends State<RegisterPage> {
         _firstName.text.trim().isEmpty ||
         _email.text.trim().isEmpty ||
         _password.text.isEmpty) {
-      setState(() => _error = 'Remplissez tous les champs.');
+      setState(() => _error = context.tr('Remplissez tous les champs.'));
       return;
     }
 
@@ -64,7 +65,7 @@ class _RegisterPageState extends State<RegisterPage> {
             const Center(child: PawLogo()),
             const SizedBox(height: 12),
             Text(
-              'PawRescue AI',
+              context.tr('PawRescue AI'),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 28,
@@ -74,7 +75,7 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Rejoignez notre communauté\npour aider les animaux',
+              context.tr('Rejoignez notre communauté\npour aider les animaux'),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
@@ -85,26 +86,26 @@ class _RegisterPageState extends State<RegisterPage> {
             const SizedBox(height: 28),
             _AuthField(
               controller: _lastName,
-              label: 'Nom',
+              label: context.tr('Nom'),
               icon: Icons.person_outline,
             ),
             const SizedBox(height: 14),
             _AuthField(
               controller: _firstName,
-              label: 'Prénom',
+              label: context.tr('Prénom'),
               icon: Icons.person_outline,
             ),
             const SizedBox(height: 14),
             _AuthField(
               controller: _email,
-              label: 'Email',
+              label: context.tr('Email'),
               icon: Icons.mail_outline,
               keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 14),
             _AuthField(
               controller: _password,
-              label: 'Mot de passe',
+              label: context.tr('Mot de passe'),
               icon: Icons.lock_outline,
               obscureText: _obscurePassword,
               suffix: IconButton(
@@ -139,7 +140,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                child: const Text('Continuer'),
+                child: Text(context.tr('Continuer')),
               ),
             ),
             const SizedBox(height: 22),
@@ -147,7 +148,7 @@ class _RegisterPageState extends State<RegisterPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Déjà un compte ? ',
+                  context.tr('Déjà un compte ? '),
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                     fontSize: 15,
@@ -156,7 +157,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 GestureDetector(
                   onTap: () => Navigator.of(context).pop(),
                   child: Text(
-                    'Se connecter',
+                    context.tr('Se connecter'),
                     style: TextStyle(
                       color: PawLogo.green,
                       fontSize: 15,

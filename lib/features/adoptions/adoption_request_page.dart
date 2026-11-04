@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/api_client.dart';
+import '../../l10n/app_localizations.dart';
 import '../animals/animal_models.dart';
 import '../auth/auth_api.dart';
 import 'adoption_api.dart';
@@ -93,30 +94,39 @@ class _AdoptionRequestPageState extends State<AdoptionRequestPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          title: const Row(
+          title: Row(
             children: [
               Icon(Icons.check_circle, color: Colors.green, size: 30),
               SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Demande envoyée',
+                  context.tr('Demande envoyée'),
                   style: TextStyle(fontWeight: FontWeight.w800),
                 ),
               ),
             ],
           ),
           content: Text(
-            'Votre demande d’adoption pour '
-            '${widget.animal.name} a été envoyée avec succès.\n\n'
-            'Le statut actuel de votre demande est : '
-            '${request.statusDisplay.isNotEmpty ? request.statusDisplay : 'En attente'}.',
+            context
+                .tr(
+                  'Votre demande d’adoption pour {name} a été envoyée avec succès.\n\nLe statut actuel de votre demande est : {status}.',
+                )
+                .replaceAll('{name}', widget.animal.name)
+                .replaceAll(
+                  '{status}',
+                  context.tr(
+                    request.statusDisplay.isNotEmpty
+                        ? request.statusDisplay
+                        : 'En attente',
+                  ),
+                ),
           ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('OK'),
+              child: Text(context.tr('OK')),
             ),
           ],
         );
@@ -148,8 +158,8 @@ class _AdoptionRequestPageState extends State<AdoptionRequestPage> {
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         iconTheme: const IconThemeData(color: Color(0xFF243028)),
-        title: const Text(
-          'Demande d’adoption',
+        title: Text(
+          context.tr('Demande d’adoption'),
           style: TextStyle(
             fontWeight: FontWeight.w800,
             color: Color(0xFF243028),
@@ -166,8 +176,8 @@ class _AdoptionRequestPageState extends State<AdoptionRequestPage> {
 
               const SizedBox(height: 28),
 
-              const Text(
-                'Votre demande',
+              Text(
+                context.tr('Votre demande'),
                 style: TextStyle(
                   fontSize: 21,
                   fontWeight: FontWeight.w800,
@@ -178,8 +188,9 @@ class _AdoptionRequestPageState extends State<AdoptionRequestPage> {
               const SizedBox(height: 8),
 
               Text(
-                'Vous pouvez ajouter un message pour présenter '
-                'votre projet d’adoption au refuge.',
+                context.tr(
+                  'Vous pouvez ajouter un message pour présenter votre projet d’adoption au refuge.',
+                ),
                 style: TextStyle(color: Colors.grey.shade700, height: 1.45),
               ),
 
@@ -191,11 +202,11 @@ class _AdoptionRequestPageState extends State<AdoptionRequestPage> {
                 maxLength: 1000,
                 keyboardType: TextInputType.multiline,
                 decoration: InputDecoration(
-                  hintText:
-                      'Exemple :\n\n'
-                      'Bonjour, je souhaite adopter ${animal.name}. '
-                      'Je dispose d’un environnement adapté et je '
-                      'souhaite lui offrir un foyer stable et sécurisé.',
+                  hintText: context
+                      .tr(
+                        'Exemple :\n\nBonjour, je souhaite adopter {name}. Je dispose d’un environnement adapté et je souhaite lui offrir un foyer stable et sécurisé.',
+                      )
+                      .replaceAll('{name}', animal.name),
                   filled: true,
                   fillColor: Theme.of(context).colorScheme.surface,
                   alignLabelWithHint: true,
@@ -239,7 +250,9 @@ class _AdoptionRequestPageState extends State<AdoptionRequestPage> {
                         )
                       : const Icon(Icons.send),
                   label: Text(
-                    _submitting ? 'Envoi en cours...' : 'Envoyer ma demande',
+                    context.tr(
+                      _submitting ? 'Envoi en cours...' : 'Envoyer ma demande',
+                    ),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -262,7 +275,9 @@ class _AdoptionRequestPageState extends State<AdoptionRequestPage> {
 
               Center(
                 child: Text(
-                  'Le refuge examinera votre demande avant de prendre une décision.',
+                  context.tr(
+                    'Le refuge examinera votre demande avant de prendre une décision.',
+                  ),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 13,
@@ -323,7 +338,9 @@ class _AdoptionRequestPageState extends State<AdoptionRequestPage> {
 
                       if (animal.breed.isNotEmpty)
                         Text(
-                          'Race : ${animal.breed}',
+                          context
+                              .tr('Race : {value}')
+                              .replaceAll('{value}', animal.breed),
                           style: TextStyle(
                             fontSize: 15,
                             color: Colors.grey.shade700,
@@ -342,13 +359,13 @@ class _AdoptionRequestPageState extends State<AdoptionRequestPage> {
                     color: Colors.green.withOpacity(0.10),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(Icons.pets, size: 16, color: Colors.green),
                       SizedBox(width: 5),
                       Text(
-                        'Adoptable',
+                        context.tr('Adoptable'),
                         style: TextStyle(
                           color: Colors.green,
                           fontWeight: FontWeight.w700,

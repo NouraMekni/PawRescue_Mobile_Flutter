@@ -7,7 +7,11 @@ void main() {
   test('dark mode preference is restored from shared preferences', () async {
     SharedPreferences.setMockInitialValues({});
     final preferences = await SharedPreferences.getInstance();
-    final controller = ThemeController(preferences, isDark: false);
+    final controller = ThemeController(
+      preferences,
+      isDark: false,
+      locale: const Locale('fr'),
+    );
 
     await controller.setDarkMode(true);
 
@@ -17,7 +21,23 @@ void main() {
     final restartedController = ThemeController(
       preferences,
       isDark: preferences.getBool('dark_mode_enabled') ?? false,
+      locale: const Locale('fr'),
     );
     expect(restartedController.themeMode.value, ThemeMode.dark);
+  });
+
+  test('selected language is persisted', () async {
+    SharedPreferences.setMockInitialValues({});
+    final preferences = await SharedPreferences.getInstance();
+    final controller = ThemeController(
+      preferences,
+      isDark: false,
+      locale: const Locale('fr'),
+    );
+
+    await controller.setLocale(const Locale('ar'));
+
+    expect(controller.locale.value, const Locale('ar'));
+    expect(preferences.getString('language_code'), 'ar');
   });
 }

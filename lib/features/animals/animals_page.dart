@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../auth/auth_api.dart';
 import 'animal_api.dart';
 import 'animal_detail_page.dart';
@@ -172,10 +173,10 @@ class _AnimalsPageState extends State<AnimalsPage> {
         elevation: 0,
         title: Text(
           _isCitizen && _citizenTab == 1
-              ? 'Mes animaux'
+              ? context.tr('Mes animaux')
               : _isRefuge && _citizenTab == 1
-              ? 'Animaux de mon refuge'
-              : 'Animaux à adopter',
+              ? context.tr('Animaux de mon refuge')
+              : context.tr('Animaux à adopter'),
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Color(0xFF1F2937),
@@ -184,7 +185,7 @@ class _AnimalsPageState extends State<AnimalsPage> {
         actions: [
           if (_isRefuge)
             IconButton(
-              tooltip: 'Demandes de prise en charge',
+              tooltip: context.tr('Demandes de prise en charge'),
               onPressed: _openIntakeRequests,
               icon: const Icon(Icons.inbox_outlined),
             ),
@@ -205,13 +206,15 @@ class _AnimalsPageState extends State<AnimalsPage> {
               child: Row(
                 children: [
                   ChoiceChip(
-                    label: const Text('À adopter'),
+                    label: Text(context.tr('À adopter')),
                     selected: _citizenTab == 0,
                     onSelected: (_) => setState(() => _citizenTab = 0),
                   ),
                   const SizedBox(width: 8),
                   ChoiceChip(
-                    label: Text(_isCitizen ? 'Mes animaux' : 'Mon refuge'),
+                    label: Text(
+                      context.tr(_isCitizen ? 'Mes animaux' : 'Mon refuge'),
+                    ),
                     selected: _citizenTab == 1,
                     onSelected: (_) => setState(() => _citizenTab = 1),
                   ),
@@ -232,7 +235,7 @@ class _AnimalsPageState extends State<AnimalsPage> {
       child: TextField(
         controller: _searchController,
         decoration: InputDecoration(
-          hintText: 'Rechercher un animal...',
+          hintText: context.tr('Rechercher un animal...'),
           prefixIcon: const Icon(Icons.search),
           suffixIcon: _search.isNotEmpty
               ? IconButton(
@@ -269,7 +272,7 @@ class _AnimalsPageState extends State<AnimalsPage> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _loadAnimals,
-                child: const Text('Réessayer'),
+                child: Text(context.tr('Réessayer')),
               ),
             ],
           ),
@@ -281,13 +284,13 @@ class _AnimalsPageState extends State<AnimalsPage> {
       return RefreshIndicator(
         onRefresh: _loadAnimals,
         child: ListView(
-          children: const [
+          children: [
             SizedBox(height: 150),
             Icon(Icons.pets, size: 70, color: Colors.grey),
             SizedBox(height: 20),
             Center(
               child: Text(
-                'Aucun animal disponible à l’adoption.',
+                context.tr('Aucun animal disponible à l’adoption.'),
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16, color: Colors.grey),
               ),
@@ -359,7 +362,7 @@ class _AnimalCard extends StatelessWidget {
                             animal.intakeRequestStatus == 'accepted') ...[
                           const SizedBox(height: 6),
                           Text(
-                            _intakeStatus(animal),
+                            _intakeStatus(context, animal),
                             style: TextStyle(
                               color: Colors.grey.shade700,
                               fontSize: 13,
@@ -404,13 +407,20 @@ class _AnimalCard extends StatelessWidget {
     );
   }
 
-  String _intakeStatus(Animal animal) {
+  String _intakeStatus(BuildContext context, Animal animal) {
     return switch (animal.intakeRequestStatus) {
       'pending' =>
-        'Demande envoyée à ${animal.intakeRefugeName ?? 'un refuge'} — en attente',
-      'accepted' => 'Un refuge a accepté la prise en charge',
-      'rejected' => 'Demande refusée — vous pouvez contacter un autre refuge',
-      _ => 'Votre animal — aucune demande de prise en charge',
+        context
+            .tr('Demande envoyée à {name} — en attente')
+            .replaceAll(
+              '{name}',
+              animal.intakeRefugeName ?? context.tr('un refuge'),
+            ),
+      'accepted' => context.tr('Un refuge a accepté la prise en charge'),
+      'rejected' => context.tr(
+        'Demande refusée — vous pouvez contacter un autre refuge',
+      ),
+      _ => context.tr('Votre animal — aucune demande de prise en charge'),
     };
   }
 }

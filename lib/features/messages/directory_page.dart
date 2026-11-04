@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/api_client.dart';
+import '../../l10n/app_localizations.dart';
 import '../auth/auth_api.dart';
 import '../auth/paw_logo.dart';
 import 'compose_page.dart';
@@ -25,8 +26,8 @@ class DirectoryButtons extends StatelessWidget {
           foreground: const Color(0xFF1E3A4C),
           iconColor: PawLogo.green,
           icon: Icons.home_outlined,
-          title: 'Les refuges',
-          subtitle: 'Nom, téléphone, adresse, et un message.',
+          title: context.tr('Les refuges'),
+          subtitle: context.tr('Nom, téléphone, adresse, et un message.'),
           border: const Color(0xFFE3E8E4),
           onTap: () => _open(context, DirectoryKind.refuge),
         ),
@@ -36,8 +37,8 @@ class DirectoryButtons extends StatelessWidget {
           foreground: const Color(0xFF1E3A4C),
           iconColor: PawLogo.green,
           icon: Icons.medical_services_outlined,
-          title: 'Les vétérinaires',
-          subtitle: 'Écrivez à un vétérinaire près de vous.',
+          title: context.tr('Les vétérinaires'),
+          subtitle: context.tr('Écrivez à un vétérinaire près de vous.'),
           onTap: () => _open(context, DirectoryKind.veterinaire),
         ),
       ],
@@ -112,7 +113,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
         return;
       }
       setState(() {
-        _error = 'Impossible de joindre le serveur.';
+        _error = context.tr('Impossible de joindre le serveur.');
         _loading = false;
       });
     }
@@ -120,7 +121,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    final title = _isRefuge ? 'Les refuges' : 'Les vétérinaires';
+    final title = context.tr(_isRefuge ? 'Les refuges' : 'Les vétérinaires');
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
@@ -136,9 +137,11 @@ class _DirectoryPageState extends State<DirectoryPage> {
           : _items.isEmpty
           ? Center(
               child: Text(
-                _isRefuge
-                    ? 'Aucun refuge pour le moment.'
-                    : 'Aucun vétérinaire pour le moment.',
+                context.tr(
+                  _isRefuge
+                      ? 'Aucun refuge pour le moment.'
+                      : 'Aucun vétérinaire pour le moment.',
+                ),
               ),
             )
           : ListView.separated(
@@ -237,7 +240,7 @@ class _ContactCard extends StatelessWidget {
                 ),
               ),
               onPressed: onContact,
-              child: const Text('Contacter'),
+              child: Text(context.tr('Contacter')),
             ),
           ),
         ],

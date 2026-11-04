@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
 import 'auth_api.dart';
 import 'login_page.dart';
 import 'paw_logo.dart';
@@ -33,12 +34,14 @@ class PendingVerificationPage extends StatelessWidget {
             FilledButton(
               onPressed: () {
                 Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (_) => LoginPage(authApi: authApi)),
+                  MaterialPageRoute(
+                    builder: (_) => LoginPage(authApi: authApi),
+                  ),
                   (_) => false,
                 );
               },
               style: FilledButton.styleFrom(backgroundColor: PawLogo.green),
-              child: const Text('Retour à la connexion'),
+              child: Text(context.tr('Retour à la connexion')),
             ),
           ],
         ),

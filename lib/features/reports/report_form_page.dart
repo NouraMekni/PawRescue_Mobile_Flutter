@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../../core/api_client.dart';
+import '../../l10n/app_localizations.dart';
 import '../auth/auth_api.dart';
 import '../auth/paw_logo.dart';
 import 'reports_api.dart';
@@ -55,7 +56,9 @@ class _ReportFormPageState extends State<ReportFormPage> {
     }
     final bytes = await file.readAsBytes();
     if (bytes.length > 8 * 1024 * 1024) {
-      setState(() => _error = 'La photo ne doit pas dépasser 8 Mo.');
+      setState(
+        () => _error = context.tr('La photo ne doit pas dépasser 8 Mo.'),
+      );
       return;
     }
     setState(() {
@@ -78,7 +81,9 @@ class _ReportFormPageState extends State<ReportFormPage> {
       if (permission == LocationPermission.denied ||
           permission == LocationPermission.deniedForever) {
         setState(
-          () => _error = 'Autorisez la localisation pour remplir la position.',
+          () => _error = context.tr(
+            'Autorisez la localisation pour remplir la position.',
+          ),
         );
         return;
       }
@@ -90,7 +95,9 @@ class _ReportFormPageState extends State<ReportFormPage> {
       _latitude.text = position.latitude.toStringAsFixed(6);
       _longitude.text = position.longitude.toStringAsFixed(6);
     } catch (_) {
-      setState(() => _error = 'Activez la localisation de l\'appareil.');
+      setState(
+        () => _error = context.tr('Activez la localisation de l\'appareil.'),
+      );
     } finally {
       if (mounted) {
         setState(() => _locating = false);
@@ -106,15 +113,17 @@ class _ReportFormPageState extends State<ReportFormPage> {
       _longitude.text.trim().replaceAll(',', '.'),
     );
     if (_photoBytes == null || _photoName == null) {
-      setState(() => _error = 'Ajoutez une photo de l\'animal.');
+      setState(() => _error = context.tr('Ajoutez une photo de l\'animal.'));
       return;
     }
     if (_type == 'injured' && (_severity == null || _severity!.isEmpty)) {
-      setState(() => _error = 'Indiquez la gravité.');
+      setState(() => _error = context.tr('Indiquez la gravité.'));
       return;
     }
     if (latitude == null || longitude == null) {
-      setState(() => _error = 'Indiquez la latitude et la longitude.');
+      setState(
+        () => _error = context.tr('Indiquez la latitude et la longitude.'),
+      );
       return;
     }
 
@@ -142,7 +151,7 @@ class _ReportFormPageState extends State<ReportFormPage> {
     } on ApiException catch (error) {
       setState(() => _error = error.message);
     } catch (_) {
-      setState(() => _error = 'Impossible de joindre le serveur.');
+      setState(() => _error = context.tr('Impossible de joindre le serveur.'));
     } finally {
       if (mounted) {
         setState(() => _loading = false);
@@ -154,12 +163,15 @@ class _ReportFormPageState extends State<ReportFormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(elevation: 0, title: const Text('Nouveau signalement')),
+      appBar: AppBar(
+        elevation: 0,
+        title: Text(context.tr('Nouveau signalement')),
+      ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
         children: [
-          const Text(
-            'Où est l\'animal ?',
+          Text(
+            context.tr('Où est l\'animal ?'),
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 6),
@@ -173,7 +185,7 @@ class _ReportFormPageState extends State<ReportFormPage> {
           Row(
             children: [
               _TypeCard(
-                label: 'Animal errant',
+                label: context.tr('Animal errant'),
                 icon: Icons.pets,
                 selected: _type == 'stray',
                 onTap: () => setState(() {
@@ -183,7 +195,7 @@ class _ReportFormPageState extends State<ReportFormPage> {
               ),
               const SizedBox(width: 12),
               _TypeCard(
-                label: 'Animal blessé',
+                label: context.tr('Animal blessé'),
                 icon: Icons.healing,
                 selected: _type == 'injured',
                 onTap: () => setState(() => _type = 'injured'),
@@ -192,21 +204,21 @@ class _ReportFormPageState extends State<ReportFormPage> {
           ),
           if (_type == 'injured') ...[
             const SizedBox(height: 16),
-            const Text(
-              'Gravité',
+            Text(
+              context.tr('Gravité'),
               style: TextStyle(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               children:
-                  const [
+                  [
                     _Severity('mild', 'Léger'),
                     _Severity('moderate', 'Modéré'),
                     _Severity('critical', 'Critique'),
                   ].map((choice) {
                     return ChoiceChip(
-                      label: Text(choice.label),
+                      label: Text(context.tr(choice.label)),
                       selected: _severity == choice.value,
                       selectedColor: PawLogo.green.withValues(alpha: 0.2),
                       onSelected: (_) =>
@@ -216,16 +228,16 @@ class _ReportFormPageState extends State<ReportFormPage> {
             ),
           ],
           const SizedBox(height: 16),
-          _field(_description, 'Description', maxLines: 3),
+          _field(_description, context.tr('Description'), maxLines: 3),
           const SizedBox(height: 12),
-          _field(_address, 'Adresse'),
+          _field(_address, context.tr('Adresse')),
           const SizedBox(height: 12),
-          _field(_presence, 'Depuis quand est-il là ?'),
+          _field(_presence, context.tr('Depuis quand est-il là ?')),
           const SizedBox(height: 16),
           OutlinedButton.icon(
             onPressed: _pickPhoto,
             icon: const Icon(Icons.photo_camera_outlined),
-            label: Text(_photoName ?? 'Ajouter une photo'),
+            label: Text(_photoName ?? context.tr('Ajouter une photo')),
           ),
           if (_photoBytes != null) ...[
             const SizedBox(height: 12),
@@ -242,14 +254,14 @@ class _ReportFormPageState extends State<ReportFormPage> {
           const SizedBox(height: 16),
           Row(
             children: [
-              Expanded(child: _field(_latitude, 'Latitude')),
+              Expanded(child: _field(_latitude, context.tr('Latitude'))),
               const SizedBox(width: 12),
-              Expanded(child: _field(_longitude, 'Longitude')),
+              Expanded(child: _field(_longitude, context.tr('Longitude'))),
             ],
           ),
           const SizedBox(height: 8),
           Align(
-            alignment: Alignment.centerLeft,
+            alignment: AlignmentDirectional.centerStart,
             child: TextButton.icon(
               onPressed: _locating ? null : _useMyPosition,
               icon: _locating
@@ -262,8 +274,8 @@ class _ReportFormPageState extends State<ReportFormPage> {
                       ),
                     )
                   : const Icon(Icons.my_location, color: PawLogo.green),
-              label: const Text(
-                'Utiliser ma position',
+              label: Text(
+                context.tr('Utiliser ma position'),
                 style: TextStyle(color: PawLogo.green),
               ),
             ),
@@ -282,7 +294,11 @@ class _ReportFormPageState extends State<ReportFormPage> {
               ),
             ),
             onPressed: _loading ? null : _submit,
-            child: Text(_loading ? 'Envoi...' : 'Envoyer le signalement'),
+            child: Text(
+              _loading
+                  ? context.tr('Envoi...')
+                  : context.tr('Envoyer le signalement'),
+            ),
           ),
         ],
       ),

@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../core/api_client.dart';
 import 'auth_api.dart';
 import 'paw_logo.dart';
@@ -101,7 +102,11 @@ class _VetInfoPageState extends State<VetInfoPage> {
         _phone.text.trim().isEmpty ||
         _documentBytes == null ||
         _documentName == null) {
-      setState(() => _error = 'Remplissez les champs obligatoires et le justificatif.');
+      setState(
+        () => _error = context.tr(
+          'Remplissez les champs obligatoires et le justificatif.',
+        ),
+      );
       return;
     }
 
@@ -135,7 +140,7 @@ class _VetInfoPageState extends State<VetInfoPage> {
     } on ApiException catch (error) {
       setState(() => _error = error.message);
     } catch (_) {
-      setState(() => _error = 'Impossible de joindre le serveur.');
+      setState(() => _error = context.tr('Impossible de joindre le serveur.'));
     } finally {
       if (mounted) {
         setState(() => _loading = false);
@@ -147,66 +152,75 @@ class _VetInfoPageState extends State<VetInfoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        elevation: 0,
-        foregroundColor: const Color(0xFF243028),
-      ),
+      appBar: AppBar(elevation: 0, foregroundColor: const Color(0xFF243028)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
         children: [
-          const Text(
-            'Informations professionnelles',
+          Text(
+            context.tr('Informations professionnelles'),
             style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Ces informations seront vérifiées par un administrateur.',
+          Text(
+            context.tr(
+              'Ces informations seront vérifiées par un administrateur.',
+            ),
             style: TextStyle(color: Color(0xFF6E7872), fontSize: 15),
           ),
           const SizedBox(height: 20),
-          _label("Numéro d'inscription à l'Ordre"),
+          _label(context.tr("Numéro d'inscription à l'Ordre")),
           TextField(
             controller: _license,
             decoration: InputDecoration(
               hintText: '4582',
               suffixIcon: const Icon(Icons.help_outline),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
           const SizedBox(height: 14),
-          _label('Gouvernorat'),
+          _label(context.tr('Gouvernorat')),
           DropdownButtonFormField<String>(
             initialValue: _governorate,
-            hint: const Text('Choisir'),
+            hint: Text(context.tr('Choisir')),
             items: tunisianGovernorates
                 .map((name) => DropdownMenuItem(value: name, child: Text(name)))
                 .toList(),
-            onChanged: _loading ? null : (value) => setState(() => _governorate = value),
+            onChanged: _loading
+                ? null
+                : (value) => setState(() => _governorate = value),
             decoration: InputDecoration(
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
           const SizedBox(height: 14),
-          _label('Nom du cabinet / clinique'),
+          _label(context.tr('Nom du cabinet / clinique')),
           TextField(
             controller: _clinic,
             decoration: InputDecoration(
-              hintText: 'Clinique VetCare',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              hintText: context.tr('Clinique VetCare'),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
           const SizedBox(height: 14),
-          const Text('Adresse (optionnel)'),
+          Text(context.tr('Adresse (optionnel)')),
           const SizedBox(height: 6),
           TextField(
             controller: _address,
             decoration: InputDecoration(
               hintText: 'Avenue Habib Bourguiba, Tunis',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
           const SizedBox(height: 14),
-          _label('Téléphone'),
+          _label(context.tr('Téléphone')),
           TextField(
             controller: _phone,
             keyboardType: TextInputType.phone,
@@ -214,15 +228,22 @@ class _VetInfoPageState extends State<VetInfoPage> {
             decoration: InputDecoration(
               prefixText: '+216 ',
               hintText: '98 765 432',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
           const SizedBox(height: 14),
-          _label('Justificatif professionnel'),
+          _label(context.tr('Justificatif professionnel')),
           OutlinedButton.icon(
             onPressed: _loading ? null : _pickDocument,
             icon: const Icon(Icons.description_outlined, color: PawLogo.green),
-            label: Text(_documentName ?? 'Importer un document\nPDF, JPG ou PNG (Max 5 MB)'),
+            label: Text(
+              _documentName ??
+                  context.tr(
+                    'Importer un document\nPDF, JPG ou PNG (Max 5 MB)',
+                  ),
+            ),
           ),
           if (_error != null) ...[
             const SizedBox(height: 12),
@@ -235,9 +256,15 @@ class _VetInfoPageState extends State<VetInfoPage> {
               onPressed: _loading ? null : _submit,
               style: FilledButton.styleFrom(
                 backgroundColor: PawLogo.green,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
-              child: Text(_loading ? 'Envoi...' : 'Soumettre pour vérification'),
+              child: Text(
+                _loading
+                    ? context.tr('Envoi...')
+                    : context.tr('Soumettre pour vérification'),
+              ),
             ),
           ),
         ],
@@ -252,7 +279,10 @@ class _VetInfoPageState extends State<VetInfoPage> {
         TextSpan(
           text: text,
           children: const [
-            TextSpan(text: ' *', style: TextStyle(color: Colors.red)),
+            TextSpan(
+              text: ' *',
+              style: TextStyle(color: Colors.red),
+            ),
           ],
         ),
       ),

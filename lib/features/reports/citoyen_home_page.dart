@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/api_client.dart';
+import '../../l10n/app_localizations.dart';
 import '../auth/auth_api.dart';
 import '../auth/paw_logo.dart';
 import '../messages/compose_page.dart';
@@ -49,7 +50,7 @@ class _CitoyenHomePageState extends State<CitoyenHomePage> {
     } on ApiException catch (error) {
       setState(() => _error = error.message);
     } catch (_) {
-      setState(() => _error = 'Impossible de joindre le serveur.');
+      setState(() => _error = context.tr('Impossible de joindre le serveur.'));
     } finally {
       if (mounted) {
         setState(() => _loading = false);
@@ -91,7 +92,9 @@ class _CitoyenHomePageState extends State<CitoyenHomePage> {
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
           children: [
             Text(
-              firstName.isEmpty ? 'Bonjour' : 'Bonjour $firstName',
+              firstName.isEmpty
+                  ? context.tr('Bonjour')
+                  : '${context.tr('Bonjour')} $firstName',
               style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 4),
@@ -108,8 +111,8 @@ class _CitoyenHomePageState extends State<CitoyenHomePage> {
               child: InkWell(
                 borderRadius: BorderRadius.circular(22),
                 onTap: _openForm,
-                child: const Padding(
-                  padding: EdgeInsets.all(20),
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
                   child: Row(
                     children: [
                       Icon(Icons.pets, color: Colors.white, size: 32),
@@ -119,7 +122,7 @@ class _CitoyenHomePageState extends State<CitoyenHomePage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Signaler un animal',
+                              context.tr('Signaler un animal'),
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
@@ -128,7 +131,9 @@ class _CitoyenHomePageState extends State<CitoyenHomePage> {
                             ),
                             SizedBox(height: 4),
                             Text(
-                              'Errant ou blessé, avec une photo et votre position.',
+                              context.tr(
+                                'Errant ou blessé, avec une photo et votre position.',
+                              ),
                               style: TextStyle(color: Colors.white),
                             ),
                           ],
@@ -143,8 +148,8 @@ class _CitoyenHomePageState extends State<CitoyenHomePage> {
             const SizedBox(height: 12),
             DirectoryButtons(session: widget.session, authApi: widget.authApi),
             const SizedBox(height: 28),
-            const Text(
-              'Mes signalements',
+            Text(
+              context.tr('Mes signalements'),
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 12),
@@ -197,11 +202,11 @@ class _EmptyReports extends StatelessWidget {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
       ),
-      child: const Column(
+      child: Column(
         children: [
           Icon(Icons.pets, color: PawLogo.green, size: 36),
           SizedBox(height: 8),
-          Text('Aucun signalement pour le moment.'),
+          Text(context.tr('Aucun signalement pour le moment.')),
         ],
       ),
     );
@@ -223,7 +228,7 @@ class _ReportCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(18),
       ),
       child: Column(
@@ -233,7 +238,7 @@ class _ReportCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  reportTypeLabel(report['type']?.toString()),
+                  context.tr(reportTypeLabel(report['type']?.toString())),
                   style: const TextStyle(fontWeight: FontWeight.w800),
                 ),
               ),
@@ -248,7 +253,7 @@ class _ReportCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            reportStatusLabel(report['status']?.toString()),
+            context.tr(reportStatusLabel(report['status']?.toString())),
             style: const TextStyle(
               color: PawLogo.green,
               fontWeight: FontWeight.w600,
@@ -260,10 +265,10 @@ class _ReportCard extends StatelessWidget {
           ],
           if (onContact != null)
             Align(
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               child: TextButton(
                 onPressed: onContact,
-                child: const Text('Contacter le refuge'),
+                child: Text(context.tr('Contacter le refuge')),
               ),
             ),
         ],

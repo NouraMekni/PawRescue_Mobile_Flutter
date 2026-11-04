@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/api_client.dart';
 import 'core/theme_controller.dart';
 import 'animation_screen.dart';
 import 'features/auth/auth_api.dart';
+import 'l10n/app_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,6 +14,11 @@ Future<void> main() async {
   final themeController = ThemeController(
     preferences,
     isDark: preferences.getBool('dark_mode_enabled') ?? false,
+    locale: Locale(
+      const {'fr', 'en', 'ar'}.contains(preferences.getString('language_code'))
+          ? preferences.getString('language_code')!
+          : 'fr',
+    ),
   );
   runApp(PawRescueApp(themeController: themeController));
 }
@@ -23,20 +30,31 @@ class PawRescueApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<ThemeMode>(
-      valueListenable: themeController.themeMode,
-      builder: (context, themeMode, _) {
-        return ThemeControllerScope(
-          controller: themeController,
-          child: MaterialApp(
-            title: 'PawRescue',
-            themeMode: themeMode,
-            theme: _buildTheme(Brightness.light),
-            darkTheme: _buildTheme(Brightness.dark),
-            home: AnimationScreen(authApi: AuthApi(ApiClient())),
-          ),
-        );
-      },
+    return ValueListenableBuilder<Locale>(
+      valueListenable: themeController.locale,
+      builder: (context, locale, _) => ValueListenableBuilder<ThemeMode>(
+        valueListenable: themeController.themeMode,
+        builder: (context, themeMode, _) {
+          return ThemeControllerScope(
+            controller: themeController,
+            child: MaterialApp(
+              title: 'PawRescue',
+              locale: locale,
+              supportedLocales: AppLocalizations.supportedLocales,
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              themeMode: themeMode,
+              theme: _buildTheme(Brightness.light),
+              darkTheme: _buildTheme(Brightness.dark),
+              home: AnimationScreen(authApi: AuthApi(ApiClient())),
+            ),
+          );
+        },
+      ),
     );
   }
 

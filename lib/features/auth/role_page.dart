@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/api_client.dart';
+import '../../l10n/app_localizations.dart';
 import 'auth_api.dart';
 import 'paw_logo.dart';
 import 'refuge_info_page.dart';
@@ -124,7 +125,7 @@ class _RolePageState extends State<RolePage> {
     } on ApiException catch (error) {
       setState(() => _error = error.message);
     } catch (_) {
-      setState(() => _error = 'Impossible de joindre le serveur.');
+      setState(() => _error = context.tr('Impossible de joindre le serveur.'));
     } finally {
       if (mounted) {
         setState(() => _loading = false);
@@ -144,7 +145,7 @@ class _RolePageState extends State<RolePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Comment souhaitez-vous\naider ?',
+                context.tr('Comment souhaitez-vous\naider ?'),
                 style: TextStyle(
                   fontSize: 28,
                   height: 1.15,
@@ -161,7 +162,13 @@ class _RolePageState extends State<RolePage> {
                     final choice = roleChoices[index];
                     final selected = choice.value == _role;
                     return _RoleCard(
-                      choice: choice,
+                      choice: RoleChoice(
+                        value: choice.value,
+                        title: context.tr(choice.title),
+                        description: context.tr(choice.description),
+                        icon: choice.icon,
+                        color: choice.color,
+                      ),
                       selected: selected,
                       onTap: _loading
                           ? null
@@ -193,7 +200,11 @@ class _RolePageState extends State<RolePage> {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  child: Text(_loading ? 'Continuer...' : 'Continuer'),
+                  child: Text(
+                    _loading
+                        ? context.tr('Continuer...')
+                        : context.tr('Continuer'),
+                  ),
                 ),
               ),
             ],

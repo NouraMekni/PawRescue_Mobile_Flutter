@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/api_client.dart';
+import '../../l10n/app_localizations.dart';
 import '../auth/auth_api.dart';
 import '../auth/paw_logo.dart';
 import 'messages_api.dart';
@@ -66,11 +67,11 @@ class _ComposePageState extends State<ComposePage> {
     final refugeId = _refugeId;
     final body = _body.text.trim();
     if (refugeId == null && widget.veterinaireId == null) {
-      setState(() => _error = 'Choisissez un refuge.');
+      setState(() => _error = context.tr('Choisissez un refuge.'));
       return;
     }
     if (body.isEmpty) {
-      setState(() => _error = 'Le message ne peut pas être vide.');
+      setState(() => _error = context.tr('Le message ne peut pas être vide.'));
       return;
     }
     setState(() {
@@ -100,7 +101,7 @@ class _ComposePageState extends State<ComposePage> {
     } on ApiException catch (error) {
       setState(() => _error = error.message);
     } catch (_) {
-      setState(() => _error = 'Impossible de joindre le serveur.');
+      setState(() => _error = context.tr('Impossible de joindre le serveur.'));
     } finally {
       if (mounted) {
         setState(() => _loading = false);
@@ -112,14 +113,14 @@ class _ComposePageState extends State<ComposePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(elevation: 0, title: const Text('Nouveau message')),
+      appBar: AppBar(elevation: 0, title: Text(context.tr('Nouveau message'))),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
           if (widget.refugeId == null && widget.veterinaireId == null)
             DropdownButtonFormField<int>(
               initialValue: _refugeId,
-              decoration: _decoration('Refuge'),
+              decoration: _decoration(context.tr('Refuge')),
               items: [
                 for (final refuge in _refuges)
                   DropdownMenuItem(
@@ -132,8 +133,14 @@ class _ComposePageState extends State<ComposePage> {
           else
             Text(
               widget.contactName == null
-                  ? 'Le destinataire doit accepter votre message avant de pouvoir répondre.'
-                  : 'Écrire à ${widget.contactName}. Le destinataire doit accepter avant de répondre.',
+                  ? context.tr(
+                      'Le destinataire doit accepter votre message avant de pouvoir répondre.',
+                    )
+                  : context
+                        .tr(
+                          'Écrire à {name}. Le destinataire doit accepter avant de répondre.',
+                        )
+                        .replaceAll('{name}', widget.contactName!),
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
@@ -142,7 +149,7 @@ class _ComposePageState extends State<ComposePage> {
           TextField(
             controller: _body,
             maxLines: 4,
-            decoration: _decoration('Message'),
+            decoration: _decoration(context.tr('Message')),
           ),
           if (_error != null) ...[
             const SizedBox(height: 12),
@@ -158,7 +165,11 @@ class _ComposePageState extends State<ComposePage> {
               ),
             ),
             onPressed: _loading ? null : _send,
-            child: Text(_loading ? 'Envoi...' : 'Envoyer la demande'),
+            child: Text(
+              _loading
+                  ? context.tr('Envoi...')
+                  : context.tr('Envoyer la demande'),
+            ),
           ),
         ],
       ),

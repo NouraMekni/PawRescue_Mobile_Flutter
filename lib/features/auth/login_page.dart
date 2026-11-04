@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/api_client.dart';
+import '../../l10n/app_localizations.dart';
 import 'auth_api.dart';
 import 'paw_logo.dart';
 import 'register_page.dart';
@@ -51,7 +52,7 @@ class _LoginPageState extends State<LoginPage> {
     } on ApiException catch (error) {
       setState(() => _error = error.message);
     } catch (_) {
-      setState(() => _error = 'Impossible de joindre le serveur.');
+      setState(() => _error = context.tr('Impossible de joindre le serveur.'));
     } finally {
       if (mounted) {
         setState(() => _loading = false);
@@ -122,7 +123,7 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.fromLTRB(24, 4, 24, 24),
               children: [
                 Text(
-                  'Connexion',
+                  context.tr('Connexion'),
                   style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.w800,
@@ -131,7 +132,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Heureux de vous revoir.',
+                  context.tr('Heureux de vous revoir.'),
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                     fontSize: 15,
@@ -141,7 +142,10 @@ class _LoginPageState extends State<LoginPage> {
                 TextField(
                   controller: _email,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: _fieldDecoration('E-mail', Icons.mail_outline),
+                  decoration: _fieldDecoration(
+                    context.tr('E-mail'),
+                    Icons.mail_outline,
+                  ),
                 ),
                 const SizedBox(height: 14),
                 TextField(
@@ -149,7 +153,7 @@ class _LoginPageState extends State<LoginPage> {
                   obscureText: _obscurePassword,
                   decoration:
                       _fieldDecoration(
-                        'Mot de passe',
+                        context.tr('Mot de passe'),
                         Icons.lock_outline,
                       ).copyWith(
                         suffixIcon: IconButton(
@@ -188,7 +192,11 @@ class _LoginPageState extends State<LoginPage> {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    child: Text(_loading ? 'Connexion...' : 'Se connecter'),
+                    child: Text(
+                      _loading
+                          ? context.tr('Connexion...')
+                          : context.tr('Se connecter'),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -196,7 +204,7 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Pas encore de compte ? ',
+                      context.tr('Pas encore de compte ? '),
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
@@ -212,8 +220,8 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               );
                             },
-                      child: const Text(
-                        'Créer un compte',
+                      child: Text(
+                        context.tr('Créer un compte'),
                         style: TextStyle(
                           color: PawLogo.green,
                           fontWeight: FontWeight.w800,
