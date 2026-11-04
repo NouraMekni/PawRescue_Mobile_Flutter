@@ -56,30 +56,30 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(28, 36, 28, 24),
           children: [
             const Center(child: PawLogo()),
             const SizedBox(height: 12),
-            const Text(
+            Text(
               'PawRescue AI',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.w800,
-                color: Color(0xFF243028),
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Rejoignez notre communauté\npour aider les animaux',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
                 height: 1.35,
-                color: Color(0xFF8D98A0),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 28),
@@ -115,7 +115,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   _obscurePassword
                       ? Icons.visibility_outlined
                       : Icons.visibility_off_outlined,
-                  color: const Color(0xFF8D98A0),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
             ),
@@ -146,13 +146,16 @@ class _RegisterPageState extends State<RegisterPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
+                Text(
                   'Déjà un compte ? ',
-                  style: TextStyle(color: Color(0xFF8D98A0), fontSize: 15),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontSize: 15,
+                  ),
                 ),
                 GestureDetector(
                   onTap: () => Navigator.of(context).pop(),
-                  child: const Text(
+                  child: Text(
                     'Se connecter',
                     style: TextStyle(
                       color: PawLogo.green,
@@ -195,10 +198,13 @@ class _AuthField extends StatelessWidget {
       obscureText: obscureText,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: const Color(0xFF8D98A0)),
+        prefixIcon: Icon(
+          icon,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
         suffixIcon: suffix,
         filled: true,
-        fillColor: Colors.white,
+        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
         contentPadding: const EdgeInsets.symmetric(vertical: 18),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),

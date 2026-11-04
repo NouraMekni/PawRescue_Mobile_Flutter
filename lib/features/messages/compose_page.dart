@@ -111,12 +111,8 @@ class _ComposePageState extends State<ComposePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text('Nouveau message'),
-      ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppBar(elevation: 0, title: const Text('Nouveau message')),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -138,7 +134,9 @@ class _ComposePageState extends State<ComposePage> {
               widget.contactName == null
                   ? 'Le destinataire doit accepter votre message avant de pouvoir répondre.'
                   : 'Écrire à ${widget.contactName}. Le destinataire doit accepter avant de répondre.',
-              style: const TextStyle(color: Colors.black54),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
           const SizedBox(height: 16),
           TextField(
@@ -155,7 +153,9 @@ class _ComposePageState extends State<ComposePage> {
             style: FilledButton.styleFrom(
               backgroundColor: PawLogo.green,
               minimumSize: const Size.fromHeight(52),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
             ),
             onPressed: _loading ? null : _send,
             child: Text(_loading ? 'Envoi...' : 'Envoyer la demande'),
@@ -169,7 +169,7 @@ class _ComposePageState extends State<ComposePage> {
     return InputDecoration(
       labelText: label,
       filled: true,
-      fillColor: const Color(0xFFF7F8F8),
+      fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide.none,

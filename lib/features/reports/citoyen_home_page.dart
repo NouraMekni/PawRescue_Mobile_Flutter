@@ -60,7 +60,8 @@ class _CitoyenHomePageState extends State<CitoyenHomePage> {
   Future<void> _openForm() async {
     final created = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
-        builder: (_) => ReportFormPage(session: widget.session, reports: _reports),
+        builder: (_) =>
+            ReportFormPage(session: widget.session, reports: _reports),
       ),
     );
     if (created == true) {
@@ -70,14 +71,18 @@ class _CitoyenHomePageState extends State<CitoyenHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final firstName = (widget.session.user['first_name'] ?? '').toString().trim();
+    final firstName = (widget.session.user['first_name'] ?? '')
+        .toString()
+        .trim();
     final email = (widget.session.user['email'] ?? '').toString();
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F7F4),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text('PawRescue', style: TextStyle(fontWeight: FontWeight.w800)),
+        title: const Text(
+          'PawRescue',
+          style: TextStyle(fontWeight: FontWeight.w800),
+        ),
       ),
       body: RefreshIndicator(
         color: PawLogo.green,
@@ -90,7 +95,12 @@ class _CitoyenHomePageState extends State<CitoyenHomePage> {
               style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 4),
-            Text(email, style: const TextStyle(color: Colors.black54)),
+            Text(
+              email,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
             const SizedBox(height: 20),
             Material(
               color: PawLogo.green,
@@ -141,7 +151,9 @@ class _CitoyenHomePageState extends State<CitoyenHomePage> {
             if (_loading)
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 32),
-                child: Center(child: CircularProgressIndicator(color: PawLogo.green)),
+                child: Center(
+                  child: CircularProgressIndicator(color: PawLogo.green),
+                ),
               )
             else if (_error != null)
               Text(_error!, style: const TextStyle(color: Colors.red))
@@ -182,7 +194,7 @@ class _EmptyReports extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
       ),
       child: const Column(
@@ -225,13 +237,22 @@ class _ReportCard extends StatelessWidget {
                   style: const TextStyle(fontWeight: FontWeight.w800),
                 ),
               ),
-              Text(date, style: const TextStyle(color: Colors.black45, fontSize: 12)),
+              Text(
+                date,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  fontSize: 12,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 8),
           Text(
             reportStatusLabel(report['status']?.toString()),
-            style: const TextStyle(color: PawLogo.green, fontWeight: FontWeight.w600),
+            style: const TextStyle(
+              color: PawLogo.green,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           if (description.isNotEmpty) ...[
             const SizedBox(height: 6),

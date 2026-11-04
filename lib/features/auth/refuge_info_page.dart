@@ -137,9 +137,8 @@ class _RefugeInfoPageState extends State<RefugeInfoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         foregroundColor: const Color(0xFF243028),
       ),

@@ -9,7 +9,9 @@ class PawPattern extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        const Positioned.fill(child: ColoredBox(color: Colors.white)),
+        Positioned.fill(
+          child: ColoredBox(color: Theme.of(context).colorScheme.surface),
+        ),
         const Positioned.fill(child: CustomPaint(painter: _PawPatternPainter())),
         Positioned.fill(child: child),
       ],

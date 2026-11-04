@@ -142,16 +142,20 @@ class _NotificationsPageState extends State<NotificationsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F7F4),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text('Notifications', style: TextStyle(fontWeight: FontWeight.w800)),
+        title: const Text(
+          'Notifications',
+          style: TextStyle(fontWeight: FontWeight.w800),
+        ),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator(color: PawLogo.green))
           : _error != null
-          ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
+          ? Center(
+              child: Text(_error!, style: const TextStyle(color: Colors.red)),
+            )
           : _items.isEmpty
           ? const Center(child: Text('Aucune notification.'))
           : RefreshIndicator(
@@ -160,12 +164,13 @@ class _NotificationsPageState extends State<NotificationsPage> {
               child: ListView.separated(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
                 itemCount: _items.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 10),
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 10),
                 itemBuilder: (context, index) {
                   final item = _items[index];
                   final unread = item['is_read'] != true;
                   return Material(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(20),
                     child: InkWell(
                       borderRadius: BorderRadius.circular(20),
@@ -180,7 +185,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
                               height: 10,
                               margin: const EdgeInsets.only(top: 6),
                               decoration: BoxDecoration(
-                                color: unread ? PawLogo.green : const Color(0xFFE3E8E4),
+                                color: unread
+                                    ? PawLogo.green
+                                    : const Color(0xFFE3E8E4),
                                 shape: BoxShape.circle,
                               ),
                             ),
@@ -192,17 +199,25 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                   Text(
                                     (item['title'] ?? '').toString(),
                                     style: TextStyle(
-                                      fontWeight: unread ? FontWeight.w800 : FontWeight.w600,
+                                      fontWeight: unread
+                                          ? FontWeight.w800
+                                          : FontWeight.w600,
                                       fontSize: 16,
                                     ),
                                   ),
-                                  if ((item['body'] ?? '').toString().isNotEmpty) ...[
+                                  if ((item['body'] ?? '')
+                                      .toString()
+                                      .isNotEmpty) ...[
                                     const SizedBox(height: 4),
                                     Text(
                                       item['body'].toString(),
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(color: Colors.black54),
+                                      style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant,
+                                      ),
                                     ),
                                   ],
                                 ],

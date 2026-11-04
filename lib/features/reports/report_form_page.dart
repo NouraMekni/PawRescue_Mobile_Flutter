@@ -10,7 +10,11 @@ import '../auth/paw_logo.dart';
 import 'reports_api.dart';
 
 class ReportFormPage extends StatefulWidget {
-  const ReportFormPage({super.key, required this.session, required this.reports});
+  const ReportFormPage({
+    super.key,
+    required this.session,
+    required this.reports,
+  });
 
   final AuthSession session;
   final ReportsApi reports;
@@ -73,11 +77,15 @@ class _ReportFormPageState extends State<ReportFormPage> {
       }
       if (permission == LocationPermission.denied ||
           permission == LocationPermission.deniedForever) {
-        setState(() => _error = 'Autorisez la localisation pour remplir la position.');
+        setState(
+          () => _error = 'Autorisez la localisation pour remplir la position.',
+        );
         return;
       }
       final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
       );
       _latitude.text = position.latitude.toStringAsFixed(6);
       _longitude.text = position.longitude.toStringAsFixed(6);
@@ -91,8 +99,12 @@ class _ReportFormPageState extends State<ReportFormPage> {
   }
 
   Future<void> _submit() async {
-    final latitude = double.tryParse(_latitude.text.trim().replaceAll(',', '.'));
-    final longitude = double.tryParse(_longitude.text.trim().replaceAll(',', '.'));
+    final latitude = double.tryParse(
+      _latitude.text.trim().replaceAll(',', '.'),
+    );
+    final longitude = double.tryParse(
+      _longitude.text.trim().replaceAll(',', '.'),
+    );
     if (_photoBytes == null || _photoName == null) {
       setState(() => _error = 'Ajoutez une photo de l\'animal.');
       return;
@@ -141,12 +153,8 @@ class _ReportFormPageState extends State<ReportFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text('Nouveau signalement'),
-      ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppBar(elevation: 0, title: const Text('Nouveau signalement')),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
         children: [
@@ -155,9 +163,11 @@ class _ReportFormPageState extends State<ReportFormPage> {
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 6),
-          const Text(
+          Text(
             'Une photo et la position suffisent pour prévenir le refuge le plus proche.',
-            style: TextStyle(color: Colors.black54),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: 18),
           Row(
@@ -182,22 +192,27 @@ class _ReportFormPageState extends State<ReportFormPage> {
           ),
           if (_type == 'injured') ...[
             const SizedBox(height: 16),
-            const Text('Gravité', style: TextStyle(fontWeight: FontWeight.w700)),
+            const Text(
+              'Gravité',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
-              children: const [
-                _Severity('mild', 'Léger'),
-                _Severity('moderate', 'Modéré'),
-                _Severity('critical', 'Critique'),
-              ].map((choice) {
-                return ChoiceChip(
-                  label: Text(choice.label),
-                  selected: _severity == choice.value,
-                  selectedColor: PawLogo.green.withValues(alpha: 0.2),
-                  onSelected: (_) => setState(() => _severity = choice.value),
-                );
-              }).toList(),
+              children:
+                  const [
+                    _Severity('mild', 'Léger'),
+                    _Severity('moderate', 'Modéré'),
+                    _Severity('critical', 'Critique'),
+                  ].map((choice) {
+                    return ChoiceChip(
+                      label: Text(choice.label),
+                      selected: _severity == choice.value,
+                      selectedColor: PawLogo.green.withValues(alpha: 0.2),
+                      onSelected: (_) =>
+                          setState(() => _severity = choice.value),
+                    );
+                  }).toList(),
             ),
           ],
           const SizedBox(height: 16),
@@ -216,7 +231,12 @@ class _ReportFormPageState extends State<ReportFormPage> {
             const SizedBox(height: 12),
             ClipRRect(
               borderRadius: BorderRadius.circular(16),
-              child: Image.memory(_photoBytes!, height: 160, width: double.infinity, fit: BoxFit.cover),
+              child: Image.memory(
+                _photoBytes!,
+                height: 160,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
             ),
           ],
           const SizedBox(height: 16),
@@ -236,10 +256,16 @@ class _ReportFormPageState extends State<ReportFormPage> {
                   ? const SizedBox(
                       width: 16,
                       height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: PawLogo.green),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: PawLogo.green,
+                      ),
                     )
                   : const Icon(Icons.my_location, color: PawLogo.green),
-              label: const Text('Utiliser ma position', style: TextStyle(color: PawLogo.green)),
+              label: const Text(
+                'Utiliser ma position',
+                style: TextStyle(color: PawLogo.green),
+              ),
             ),
           ),
           if (_error != null) ...[
@@ -251,7 +277,9 @@ class _ReportFormPageState extends State<ReportFormPage> {
             style: FilledButton.styleFrom(
               backgroundColor: PawLogo.green,
               minimumSize: const Size.fromHeight(52),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
             ),
             onPressed: _loading ? null : _submit,
             child: Text(_loading ? 'Envoi...' : 'Envoyer le signalement'),
@@ -261,14 +289,18 @@ class _ReportFormPageState extends State<ReportFormPage> {
     );
   }
 
-  Widget _field(TextEditingController controller, String label, {int maxLines = 1}) {
+  Widget _field(
+    TextEditingController controller,
+    String label, {
+    int maxLines = 1,
+  }) {
     return TextField(
       controller: controller,
       maxLines: maxLines,
       decoration: InputDecoration(
         labelText: label,
         filled: true,
-        fillColor: const Color(0xFFF7F8F8),
+        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
@@ -299,7 +331,9 @@ class _TypeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Material(
-        color: selected ? PawLogo.green.withValues(alpha: 0.12) : const Color(0xFFF7F8F8),
+        color: selected
+            ? PawLogo.green.withValues(alpha: 0.12)
+            : const Color(0xFFF7F8F8),
         borderRadius: BorderRadius.circular(18),
         child: InkWell(
           borderRadius: BorderRadius.circular(18),
@@ -315,14 +349,21 @@ class _TypeCard extends StatelessWidget {
             ),
             child: Column(
               children: [
-                Icon(icon, color: selected ? PawLogo.green : Colors.black54),
+                Icon(
+                  icon,
+                  color: selected
+                      ? PawLogo.green
+                      : Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
                 const SizedBox(height: 8),
                 Text(
                   label,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
-                    color: selected ? PawLogo.green : Colors.black87,
+                    color: selected
+                        ? PawLogo.green
+                        : Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ],

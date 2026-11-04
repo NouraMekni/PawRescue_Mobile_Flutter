@@ -1,24 +1,64 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/api_client.dart';
+import 'core/theme_controller.dart';
+import 'animation_screen.dart';
 import 'features/auth/auth_api.dart';
-import 'features/auth/login_page.dart';
 
-void main() {
-  runApp(const PawRescueApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final preferences = await SharedPreferences.getInstance();
+  final themeController = ThemeController(
+    preferences,
+    isDark: preferences.getBool('dark_mode_enabled') ?? false,
+  );
+  runApp(PawRescueApp(themeController: themeController));
 }
 
 class PawRescueApp extends StatelessWidget {
-  const PawRescueApp({super.key});
+  const PawRescueApp({super.key, required this.themeController});
+
+  final ThemeController themeController;
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'PawRescue',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: themeController.themeMode,
+      builder: (context, themeMode, _) {
+        return ThemeControllerScope(
+          controller: themeController,
+          child: MaterialApp(
+            title: 'PawRescue',
+            themeMode: themeMode,
+            theme: _buildTheme(Brightness.light),
+            darkTheme: _buildTheme(Brightness.dark),
+            home: AnimationScreen(authApi: AuthApi(ApiClient())),
+          ),
+        );
+      },
+    );
+  }
+
+  ThemeData _buildTheme(Brightness brightness) {
+    final isDark = brightness == Brightness.dark;
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: Colors.teal,
+      brightness: brightness,
+      surface: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+    );
+    return ThemeData(
+      colorScheme: colorScheme,
+      scaffoldBackgroundColor: isDark
+          ? const Color(0xFF121212)
+          : const Color(0xFFF6F7F4),
+      appBarTheme: AppBarTheme(
+        backgroundColor: colorScheme.surface,
+        foregroundColor: colorScheme.onSurface,
       ),
-      home: LoginPage(authApi: AuthApi(ApiClient())),
+      inputDecorationTheme: InputDecorationTheme(
+        fillColor: isDark ? const Color(0xFF2A2A2A) : const Color(0xFFF7F8F8),
+      ),
     );
   }
 }

@@ -44,7 +44,8 @@ class _LoginPageState extends State<LoginPage> {
       }
       await Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (_) => homeForSession(session: session, authApi: widget.authApi),
+          builder: (_) =>
+              homeForSession(session: session, authApi: widget.authApi),
         ),
       );
     } on ApiException catch (error) {
@@ -62,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     final topHeight = MediaQuery.sizeOf(context).height * 0.42;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
           SizedBox(
@@ -81,10 +82,10 @@ class _LoginPageState extends State<LoginPage> {
                     alignment: const Alignment(0, -0.05),
                   ),
                 ),
-                const Positioned(
+                Positioned(
                   left: 24,
                   top: 48,
-                  child: Row(
+                  child: const Row(
                     children: [
                       Icon(Icons.pets, color: Colors.white, size: 36),
                       SizedBox(width: 10),
@@ -105,9 +106,9 @@ class _LoginPageState extends State<LoginPage> {
                   bottom: 0,
                   child: Container(
                     height: 46,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.vertical(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(40),
                       ),
                     ),
@@ -120,18 +121,21 @@ class _LoginPageState extends State<LoginPage> {
             child: ListView(
               padding: const EdgeInsets.fromLTRB(24, 4, 24, 24),
               children: [
-                const Text(
+                Text(
                   'Connexion',
                   style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF243028),
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 6),
-                const Text(
+                Text(
                   'Heureux de vous revoir.',
-                  style: TextStyle(color: Color(0xFF8D98A0), fontSize: 15),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontSize: 15,
+                  ),
                 ),
                 const SizedBox(height: 22),
                 TextField(
@@ -143,19 +147,27 @@ class _LoginPageState extends State<LoginPage> {
                 TextField(
                   controller: _password,
                   obscureText: _obscurePassword,
-                  decoration: _fieldDecoration('Mot de passe', Icons.lock_outline).copyWith(
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        setState(() => _obscurePassword = !_obscurePassword);
-                      },
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                        color: const Color(0xFF8D98A0),
+                  decoration:
+                      _fieldDecoration(
+                        'Mot de passe',
+                        Icons.lock_outline,
+                      ).copyWith(
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(
+                              () => _obscurePassword = !_obscurePassword,
+                            );
+                          },
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurfaceVariant,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
                 ),
                 if (_error != null) ...[
                   const SizedBox(height: 12),
@@ -183,9 +195,11 @@ class _LoginPageState extends State<LoginPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       'Pas encore de compte ? ',
-                      style: TextStyle(color: Color(0xFF8D98A0)),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                     GestureDetector(
                       onTap: _loading
@@ -193,7 +207,8 @@ class _LoginPageState extends State<LoginPage> {
                           : () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (_) => RegisterPage(authApi: widget.authApi),
+                                  builder: (_) =>
+                                      RegisterPage(authApi: widget.authApi),
                                 ),
                               );
                             },
@@ -218,9 +233,12 @@ class _LoginPageState extends State<LoginPage> {
   InputDecoration _fieldDecoration(String label, IconData icon) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: Icon(icon, color: const Color(0xFF8D98A0)),
+      prefixIcon: Icon(
+        icon,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+      ),
       filled: true,
-      fillColor: const Color(0xFFF7F8F8),
+      fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide.none,

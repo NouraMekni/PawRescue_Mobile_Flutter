@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../../core/api_client.dart';
+import '../../core/theme_controller.dart';
 import '../auth/auth_api.dart';
 import '../auth/login_page.dart';
 import '../auth/paw_logo.dart';
@@ -74,20 +75,40 @@ class _ProfileTabState extends State<ProfileTab> {
         ? Map<String, dynamic>.from(user['profile'] as Map)
         : <String, dynamic>{};
     _role = (user['role'] ?? 'citoyen').toString();
-    _firstName = TextEditingController(text: (user['first_name'] ?? '').toString());
-    _lastName = TextEditingController(text: (user['last_name'] ?? '').toString());
+    _firstName = TextEditingController(
+      text: (user['first_name'] ?? '').toString(),
+    );
+    _lastName = TextEditingController(
+      text: (user['last_name'] ?? '').toString(),
+    );
     _phone = TextEditingController(text: (user['phone'] ?? '').toString());
-    _address = TextEditingController(text: (profile['address'] ?? '').toString());
+    _address = TextEditingController(
+      text: (profile['address'] ?? '').toString(),
+    );
     _bio = TextEditingController(text: (profile['bio'] ?? '').toString());
-    _maxMissions = TextEditingController(text: '${profile['max_missions'] ?? 3}');
-    _license = TextEditingController(text: (profile['license_number'] ?? '').toString());
-    _specialties = TextEditingController(text: (profile['specialties'] ?? '').toString());
+    _maxMissions = TextEditingController(
+      text: '${profile['max_missions'] ?? 3}',
+    );
+    _license = TextEditingController(
+      text: (profile['license_number'] ?? '').toString(),
+    );
+    _specialties = TextEditingController(
+      text: (profile['specialties'] ?? '').toString(),
+    );
     _radius = TextEditingController(text: '${profile['radius_km'] ?? 15}');
-    _refugeName = TextEditingController(text: (profile['name'] ?? '').toString());
-    _refugePhone = TextEditingController(text: (profile['phone'] ?? '').toString());
-    _description = TextEditingController(text: (profile['description'] ?? '').toString());
+    _refugeName = TextEditingController(
+      text: (profile['name'] ?? '').toString(),
+    );
+    _refugePhone = TextEditingController(
+      text: (profile['phone'] ?? '').toString(),
+    );
+    _description = TextEditingController(
+      text: (profile['description'] ?? '').toString(),
+    );
     _capacity = TextEditingController(text: '${profile['capacity'] ?? 0}');
-    _actionRadius = TextEditingController(text: '${profile['action_radius_km'] ?? 20}');
+    _actionRadius = TextEditingController(
+      text: '${profile['action_radius_km'] ?? 20}',
+    );
     _latitude = TextEditingController(text: _text(profile['latitude']));
     _longitude = TextEditingController(text: _text(profile['longitude']));
     _available = profile['is_available'] != false;
@@ -158,11 +179,15 @@ class _ProfileTabState extends State<ProfileTab> {
       }
       if (permission == LocationPermission.denied ||
           permission == LocationPermission.deniedForever) {
-        setState(() => _error = 'Autorisez la localisation pour remplir la position.');
+        setState(
+          () => _error = 'Autorisez la localisation pour remplir la position.',
+        );
         return;
       }
       final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
       );
       _latitude.text = position.latitude.toStringAsFixed(6);
       _longitude.text = position.longitude.toStringAsFixed(6);
@@ -240,10 +265,14 @@ class _ProfileTabState extends State<ProfileTab> {
     if (_role == 'refuge' && _refugeName.text.trim().isEmpty) {
       return 'Le nom du refuge est obligatoire.';
     }
-    if (_role == 'benevole' && _maxMissions.text.trim().isNotEmpty && _readInt(_maxMissions) == null) {
+    if (_role == 'benevole' &&
+        _maxMissions.text.trim().isNotEmpty &&
+        _readInt(_maxMissions) == null) {
       return 'Le nombre de missions est invalide.';
     }
-    if (_role == 'refuge' && _capacity.text.trim().isNotEmpty && _readInt(_capacity) == null) {
+    if (_role == 'refuge' &&
+        _capacity.text.trim().isNotEmpty &&
+        _readInt(_capacity) == null) {
       return 'La capacité est invalide.';
     }
     return null;
@@ -308,12 +337,16 @@ class _ProfileTabState extends State<ProfileTab> {
   Widget build(BuildContext context) {
     final email = (widget.session.user['email'] ?? '').toString();
     final photoUrl = (widget.session.user['photo'] ?? '').toString();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themeController = ThemeControllerScope.maybeOf(context);
+    final messenger = ScaffoldMessenger.of(context);
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F7F4),
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text('Profil', style: TextStyle(fontWeight: FontWeight.w800)),
+        title: const Text(
+          'Profil',
+          style: TextStyle(fontWeight: FontWeight.w800),
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(24, 12, 24, 28),
@@ -329,7 +362,11 @@ class _ProfileTabState extends State<ProfileTab> {
                     ? MemoryImage(_photoBytes!)
                     : (photoUrl.isNotEmpty ? NetworkImage(photoUrl) : null),
                 child: _photoBytes == null && photoUrl.isEmpty
-                    ? const Icon(Icons.photo_camera_outlined, color: PawLogo.green, size: 32)
+                    ? const Icon(
+                        Icons.photo_camera_outlined,
+                        color: PawLogo.green,
+                        size: 32,
+                      )
                     : null,
               ),
             ),
@@ -344,9 +381,37 @@ class _ProfileTabState extends State<ProfileTab> {
           Text(
             roleLabel(_role),
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.black54),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: 20),
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            secondary: Icon(isDark ? Icons.dark_mode : Icons.light_mode),
+            title: const Text('Mode sombre'),
+            value: isDark,
+            activeThumbColor: PawLogo.green,
+            onChanged: themeController == null
+                ? null
+                : (enabled) async {
+                    try {
+                      await themeController.setDarkMode(enabled);
+                    } catch (_) {
+                      if (!mounted) {
+                        return;
+                      }
+                      messenger.showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Impossible d’enregistrer le thème choisi.',
+                          ),
+                        ),
+                      );
+                    }
+                  },
+          ),
+          const SizedBox(height: 12),
           _field(_firstName, 'Prénom'),
           const SizedBox(height: 12),
           _field(_lastName, 'Nom'),
@@ -354,7 +419,12 @@ class _ProfileTabState extends State<ProfileTab> {
           _field(_phone, 'Téléphone'),
           const SizedBox(height: 18),
           ..._roleFields(),
-          Text(email, style: const TextStyle(color: Colors.black54)),
+          Text(
+            email,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
           if (_error != null) ...[
             const SizedBox(height: 12),
             Text(_error!, style: const TextStyle(color: Colors.red)),
@@ -368,13 +438,18 @@ class _ProfileTabState extends State<ProfileTab> {
             style: FilledButton.styleFrom(
               backgroundColor: PawLogo.green,
               minimumSize: const Size.fromHeight(52),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
             ),
             onPressed: _loading ? null : _save,
             child: Text(_loading ? 'Enregistrement...' : 'Enregistrer'),
           ),
           const SizedBox(height: 12),
-          OutlinedButton(onPressed: _logout, child: const Text('Se déconnecter')),
+          OutlinedButton(
+            onPressed: _logout,
+            child: const Text('Se déconnecter'),
+          ),
         ],
       ),
     );
@@ -383,15 +458,16 @@ class _ProfileTabState extends State<ProfileTab> {
   List<Widget> _roleFields() {
     switch (_role) {
       case 'citoyen':
-        return [
-          _field(_address, 'Adresse'),
-          const SizedBox(height: 12),
-        ];
+        return [_field(_address, 'Adresse'), const SizedBox(height: 12)];
       case 'benevole':
         return [
           _field(_bio, 'Bio', maxLines: 3),
           const SizedBox(height: 12),
-          _field(_maxMissions, 'Missions maximum', keyboard: TextInputType.number),
+          _field(
+            _maxMissions,
+            'Missions maximum',
+            keyboard: TextInputType.number,
+          ),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
             activeThumbColor: PawLogo.green,
@@ -409,7 +485,11 @@ class _ProfileTabState extends State<ProfileTab> {
           const SizedBox(height: 12),
           _field(_specialties, 'Spécialités', maxLines: 2),
           const SizedBox(height: 12),
-          _field(_radius, 'Rayon d\'intervention (km)', keyboard: const TextInputType.numberWithOptions(decimal: true)),
+          _field(
+            _radius,
+            'Rayon d\'intervention (km)',
+            keyboard: const TextInputType.numberWithOptions(decimal: true),
+          ),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
             activeThumbColor: PawLogo.green,
@@ -451,7 +531,10 @@ class _ProfileTabState extends State<ProfileTab> {
             child: _field(
               _latitude,
               'Latitude',
-              keyboard: const TextInputType.numberWithOptions(decimal: true, signed: true),
+              keyboard: const TextInputType.numberWithOptions(
+                decimal: true,
+                signed: true,
+              ),
             ),
           ),
           const SizedBox(width: 12),
@@ -459,7 +542,10 @@ class _ProfileTabState extends State<ProfileTab> {
             child: _field(
               _longitude,
               'Longitude',
-              keyboard: const TextInputType.numberWithOptions(decimal: true, signed: true),
+              keyboard: const TextInputType.numberWithOptions(
+                decimal: true,
+                signed: true,
+              ),
             ),
           ),
         ],
@@ -472,10 +558,16 @@ class _ProfileTabState extends State<ProfileTab> {
               ? const SizedBox(
                   width: 16,
                   height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: PawLogo.green),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: PawLogo.green,
+                  ),
                 )
               : const Icon(Icons.my_location, color: PawLogo.green),
-          label: const Text('Utiliser ma position', style: TextStyle(color: PawLogo.green)),
+          label: const Text(
+            'Utiliser ma position',
+            style: TextStyle(color: PawLogo.green),
+          ),
         ),
       ),
     ];
@@ -494,7 +586,7 @@ class _ProfileTabState extends State<ProfileTab> {
       decoration: InputDecoration(
         labelText: label,
         filled: true,
-        fillColor: Colors.white,
+        fillColor: Theme.of(context).colorScheme.surface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,

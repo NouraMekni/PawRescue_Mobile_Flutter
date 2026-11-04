@@ -8,6 +8,7 @@ import '../notifications/notifications_page.dart';
 import '../reports/citoyen_home_page.dart';
 import 'placeholder_tab.dart';
 import 'profile_tab.dart';
+import '../animals/animals_page.dart';
 
 class PawShell extends StatefulWidget {
   const PawShell({super.key, required this.session, required this.authApi});
@@ -36,7 +37,7 @@ class _PawShellState extends State<PawShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F7F4),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: IndexedStack(
         index: _index,
         children: [
@@ -44,17 +45,15 @@ class _PawShellState extends State<PawShell> {
           const PlaceholderTab(
             title: 'Urgences',
             icon: Icons.emergency,
-            message: 'Les animaux blessés à traiter en priorité apparaîtront ici.',
+            message:
+                'Les animaux blessés à traiter en priorité apparaîtront ici.',
           ),
-          const PlaceholderTab(
-            title: 'Animaux',
-            icon: Icons.pets,
-            message: 'Les animaux pris en charge par les refuges apparaîtront ici.',
-          ),
+          AnimalsPage(session: widget.session, authApi: widget.authApi),
           const PlaceholderTab(
             title: 'Carte',
             icon: Icons.map,
-            message: 'La carte montrera l’emplacement de tous les animaux signalés.',
+            message:
+                'La carte montrera l’emplacement de tous les animaux signalés.',
           ),
           MessagesPage(session: widget.session, authApi: widget.authApi),
           NotificationsPage(
@@ -101,11 +100,13 @@ class RoleHomePage extends StatelessWidget {
     final user = session.user;
     final firstName = (user['first_name'] ?? '').toString().trim();
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F7F4),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text('PawRescue', style: TextStyle(fontWeight: FontWeight.w800)),
+        title: const Text(
+          'PawRescue',
+          style: TextStyle(fontWeight: FontWeight.w800),
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(24),
@@ -117,7 +118,10 @@ class RoleHomePage extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             roleLabel(user['role']?.toString()),
-            style: const TextStyle(color: PawLogo.green, fontWeight: FontWeight.w700),
+            style: const TextStyle(
+              color: PawLogo.green,
+              fontWeight: FontWeight.w700,
+            ),
           ),
           const SizedBox(height: 16),
           const Text(
@@ -160,7 +164,7 @@ class _PawBar extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(12, 0, 12, 10),
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(28),
             boxShadow: const [
               BoxShadow(
@@ -207,7 +211,9 @@ class _PawBarItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = selected ? PawLogo.green : const Color(0xFF1E3A4C);
+    final color = selected
+        ? PawLogo.green
+        : Theme.of(context).colorScheme.onSurfaceVariant;
     return InkWell(
       borderRadius: BorderRadius.circular(16),
       onTap: onTap,
@@ -219,13 +225,20 @@ class _PawBarItem extends StatelessWidget {
             Stack(
               clipBehavior: Clip.none,
               children: [
-                Icon(selected ? tab.selectedIcon : tab.icon, color: color, size: 22),
+                Icon(
+                  selected ? tab.selectedIcon : tab.icon,
+                  color: color,
+                  size: 22,
+                ),
                 if (showBadge)
                   const Positioned(
                     right: -2,
                     top: -2,
                     child: DecoratedBox(
-                      decoration: BoxDecoration(color: PawLogo.green, shape: BoxShape.circle),
+                      decoration: BoxDecoration(
+                        color: PawLogo.green,
+                        shape: BoxShape.circle,
+                      ),
                       child: SizedBox(width: 8, height: 8),
                     ),
                   ),

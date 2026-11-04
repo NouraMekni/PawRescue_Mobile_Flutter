@@ -7,7 +7,11 @@ import 'compose_page.dart';
 import 'messages_api.dart';
 
 class DirectoryButtons extends StatelessWidget {
-  const DirectoryButtons({super.key, required this.session, required this.authApi});
+  const DirectoryButtons({
+    super.key,
+    required this.session,
+    required this.authApi,
+  });
 
   final AuthSession session;
   final AuthApi authApi;
@@ -43,7 +47,8 @@ class DirectoryButtons extends StatelessWidget {
   void _open(BuildContext context, DirectoryKind kind) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => DirectoryPage(session: session, authApi: authApi, kind: kind),
+        builder: (_) =>
+            DirectoryPage(session: session, authApi: authApi, kind: kind),
       ),
     );
   }
@@ -117,18 +122,25 @@ class _DirectoryPageState extends State<DirectoryPage> {
   Widget build(BuildContext context) {
     final title = _isRefuge ? 'Les refuges' : 'Les vétérinaires';
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F7F4),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator(color: PawLogo.green))
           : _error != null
-          ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
+          ? Center(
+              child: Text(_error!, style: const TextStyle(color: Colors.red)),
+            )
           : _items.isEmpty
-          ? Center(child: Text(_isRefuge ? 'Aucun refuge pour le moment.' : 'Aucun vétérinaire pour le moment.'))
+          ? Center(
+              child: Text(
+                _isRefuge
+                    ? 'Aucun refuge pour le moment.'
+                    : 'Aucun vétérinaire pour le moment.',
+              ),
+            )
           : ListView.separated(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
               itemCount: _items.length,
@@ -170,7 +182,7 @@ class _ContactCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(22),
       ),
       child: Column(
@@ -181,18 +193,31 @@ class _ContactCard extends StatelessWidget {
                 radius: 32,
                 backgroundColor: const Color(0xFFE7F5EC),
                 backgroundImage: photo.isEmpty ? null : NetworkImage(photo),
-                child: photo.isEmpty ? const Icon(Icons.person, color: PawLogo.green) : null,
+                child: photo.isEmpty
+                    ? const Icon(Icons.person, color: PawLogo.green)
+                    : null,
               ),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                    Text(
+                      name,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
                     const SizedBox(height: 6),
-                    _line(Icons.phone_outlined, phone.isEmpty ? 'Téléphone non renseigné' : phone),
+                    _line(
+                      context,
+                      Icons.phone_outlined,
+                      phone.isEmpty ? 'Téléphone non renseigné' : phone,
+                    ),
                     const SizedBox(height: 4),
                     _line(
+                      context,
                       Icons.place_outlined,
                       location.isEmpty ? 'Adresse non renseignée' : location,
                     ),
@@ -207,7 +232,9 @@ class _ContactCard extends StatelessWidget {
             child: FilledButton(
               style: FilledButton.styleFrom(
                 backgroundColor: PawLogo.green,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
               onPressed: onContact,
               child: const Text('Contacter'),
@@ -218,12 +245,19 @@ class _ContactCard extends StatelessWidget {
     );
   }
 
-  Widget _line(IconData icon, String text) {
+  Widget _line(BuildContext context, IconData icon, String text) {
     return Row(
       children: [
         Icon(icon, size: 16, color: PawLogo.green),
         const SizedBox(width: 6),
-        Expanded(child: Text(text, style: const TextStyle(color: Colors.black54))),
+        Expanded(
+          child: Text(
+            text,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -273,10 +307,19 @@ class _ActionCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: TextStyle(color: foreground, fontSize: 18, fontWeight: FontWeight.w800),
+                      style: TextStyle(
+                        color: foreground,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                     const SizedBox(height: 4),
-                    Text(subtitle, style: TextStyle(color: foreground.withValues(alpha: 0.7))),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        color: foreground.withValues(alpha: 0.7),
+                      ),
+                    ),
                   ],
                 ),
               ),

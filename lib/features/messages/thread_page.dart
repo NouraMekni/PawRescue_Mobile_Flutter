@@ -81,11 +81,16 @@ class _ThreadPageState extends State<ThreadPage> {
   }
 
   Future<void> _accept() async {
-    await _run(() => widget.api.accept(widget.session.accessToken, widget.conversationId));
+    await _run(
+      () =>
+          widget.api.accept(widget.session.accessToken, widget.conversationId),
+    );
   }
 
   Future<void> _block() async {
-    await _run(() => widget.api.block(widget.session.accessToken, widget.conversationId));
+    await _run(
+      () => widget.api.block(widget.session.accessToken, widget.conversationId),
+    );
   }
 
   Future<void> _send() async {
@@ -95,7 +100,11 @@ class _ThreadPageState extends State<ThreadPage> {
     }
     setState(() => _sending = true);
     try {
-      await widget.api.send(widget.session.accessToken, widget.conversationId, text);
+      await widget.api.send(
+        widget.session.accessToken,
+        widget.conversationId,
+        text,
+      );
       _body.clear();
       await _load();
     } on ApiException catch (error) {
@@ -137,7 +146,9 @@ class _ThreadPageState extends State<ThreadPage> {
     final role = widget.session.user['role'];
     final title = role == 'refuge' || role == 'veterinaire'
         ? (conversation?['participant_name'] ?? 'Messages').toString()
-        : ((conversation?['refuge_name'] ?? conversation?['veterinaire_name']) ?? 'Messages')
+        : ((conversation?['refuge_name'] ??
+                      conversation?['veterinaire_name']) ??
+                  'Messages')
               .toString();
     final photo = (conversation?['photo'] ?? '').toString();
     return PopScope(
@@ -148,9 +159,8 @@ class _ThreadPageState extends State<ThreadPage> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
-          backgroundColor: Colors.white,
           elevation: 0,
           title: Row(
             children: [
@@ -168,23 +178,29 @@ class _ThreadPageState extends State<ThreadPage> {
         ),
         body: PawPattern(
           child: _loading
-            ? const Center(child: CircularProgressIndicator(color: PawLogo.green))
-            : Column(
-                children: [
-                  Expanded(
-                    child: ListView(
-                      padding: const EdgeInsets.all(16),
-                      children: [
-                        for (final row in rows)
-                          if (row is Map) _bubble(Map<String, dynamic>.from(row)),
-                        if (_error != null)
-                          Text(_error!, style: const TextStyle(color: Colors.red)),
-                      ],
+              ? const Center(
+                  child: CircularProgressIndicator(color: PawLogo.green),
+                )
+              : Column(
+                  children: [
+                    Expanded(
+                      child: ListView(
+                        padding: const EdgeInsets.all(16),
+                        children: [
+                          for (final row in rows)
+                            if (row is Map)
+                              _bubble(Map<String, dynamic>.from(row)),
+                          if (_error != null)
+                            Text(
+                              _error!,
+                              style: const TextStyle(color: Colors.red),
+                            ),
+                        ],
+                      ),
                     ),
-                  ),
-                  _bar(status, needsResponse),
-                ],
-              ),
+                    _bar(status, needsResponse),
+                  ],
+                ),
         ),
       ),
     );
@@ -205,7 +221,11 @@ class _ThreadPageState extends State<ThreadPage> {
         ),
         child: Text(
           (message['body'] ?? '').toString(),
-          style: TextStyle(color: mine ? Colors.white : Colors.black87),
+          style: TextStyle(
+            color: mine
+                ? Colors.white
+                : Theme.of(context).colorScheme.onSurface,
+          ),
         ),
       ),
     );
@@ -239,17 +259,11 @@ class _ThreadPageState extends State<ThreadPage> {
       );
     }
     if (status == 'pending') {
-      return _panel(
-        children: const [
-          Text('En attente d\'acceptation.'),
-        ],
-      );
+      return _panel(children: const [Text('En attente d\'acceptation.')]);
     }
     if (status == 'blocked') {
       return _panel(
-        children: const [
-          Text('Vous ne pouvez pas envoyer de message.'),
-        ],
+        children: const [Text('Vous ne pouvez pas envoyer de message.')],
       );
     }
     return _panel(

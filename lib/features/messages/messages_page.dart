@@ -109,11 +109,13 @@ class _MessagesPageState extends State<MessagesPage> {
   Widget build(BuildContext context) {
     final canStart = widget.session.user['role'] != 'refuge';
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F7F4),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text('Messages', style: TextStyle(fontWeight: FontWeight.w800)),
+        title: const Text(
+          'Messages',
+          style: TextStyle(fontWeight: FontWeight.w800),
+        ),
         actions: [
           if (canStart)
             IconButton(
@@ -126,7 +128,9 @@ class _MessagesPageState extends State<MessagesPage> {
       body: _loading
           ? const Center(child: CircularProgressIndicator(color: PawLogo.green))
           : _error != null
-          ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
+          ? Center(
+              child: Text(_error!, style: const TextStyle(color: Colors.red)),
+            )
           : _items.isEmpty
           ? const Center(child: Text('Aucune conversation.'))
           : RefreshIndicator(
@@ -139,16 +143,21 @@ class _MessagesPageState extends State<MessagesPage> {
                 itemBuilder: (context, index) {
                   final item = _items[index];
                   final last = item['last_message'];
-                  final preview = last is Map ? (last['body'] ?? '').toString() : '';
+                  final preview = last is Map
+                      ? (last['body'] ?? '').toString()
+                      : '';
                   final photo = (item['photo'] ?? '').toString();
                   return Material(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(20),
                     child: InkWell(
                       borderRadius: BorderRadius.circular(20),
                       onTap: () => _open(item),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
                         child: Row(
                           children: [
                             ProfileAvatar(photo: photo == 'null' ? '' : photo),
@@ -159,14 +168,23 @@ class _MessagesPageState extends State<MessagesPage> {
                                 children: [
                                   Text(
                                     _title(item),
-                                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 16,
+                                    ),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    preview.isEmpty ? _statusLabel(item) : preview,
+                                    preview.isEmpty
+                                        ? _statusLabel(item)
+                                        : preview,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(color: Colors.black54),
+                                    style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -174,14 +192,20 @@ class _MessagesPageState extends State<MessagesPage> {
                             if (item['needs_response'] == true)
                               Container(
                                 margin: const EdgeInsets.only(left: 8),
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
                                 decoration: BoxDecoration(
                                   color: const Color(0xFFE7F5EC),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: const Text(
                                   'Demande',
-                                  style: TextStyle(color: PawLogo.green, fontWeight: FontWeight.w800),
+                                  style: TextStyle(
+                                    color: PawLogo.green,
+                                    fontWeight: FontWeight.w800,
+                                  ),
                                 ),
                               ),
                           ],
@@ -210,7 +234,9 @@ class _MessagesPageState extends State<MessagesPage> {
   String _statusLabel(Map<String, dynamic> item) {
     switch (item['status']) {
       case 'pending':
-        return item['needs_response'] == true ? 'Demande à traiter' : 'En attente d\'acceptation';
+        return item['needs_response'] == true
+            ? 'Demande à traiter'
+            : 'En attente d\'acceptation';
       case 'blocked':
         return 'Vous ne pouvez pas envoyer de message.';
       default:

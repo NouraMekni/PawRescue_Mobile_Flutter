@@ -27,8 +27,7 @@ const roleChoices = <RoleChoice>[
   RoleChoice(
     value: 'citoyen',
     title: 'Citoyen',
-    description:
-        'Signaler des animaux, suivre les signalements, consulter les animaux à adopter.',
+    description: 'Signaler des animaux, suivre les signalements, consulter les animaux à adopter.',
     icon: Icons.groups_outlined,
     color: Color(0xFF1F8A45),
   ),
@@ -49,8 +48,7 @@ const roleChoices = <RoleChoice>[
   RoleChoice(
     value: 'refuge',
     title: 'Refuge',
-    description:
-        'Accueillir les animaux, suivre les missions, les adoptions et les dons.',
+    description: 'Accueillir les animaux, suivre les missions, les adoptions et les dons.',
     icon: Icons.home_outlined,
     color: Color(0xFF2F6FED),
   ),
@@ -118,7 +116,8 @@ class _RolePageState extends State<RolePage> {
       }
       await Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
-          builder: (_) => homeForSession(session: session, authApi: widget.authApi),
+          builder: (_) =>
+              homeForSession(session: session, authApi: widget.authApi),
         ),
         (_) => false,
       );
@@ -136,25 +135,21 @@ class _RolePageState extends State<RolePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F8F8),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF7F8F8),
-        elevation: 0,
-        foregroundColor: const Color(0xFF243028),
-      ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppBar(elevation: 0),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Comment souhaitez-vous\naider ?',
                 style: TextStyle(
                   fontSize: 28,
                   height: 1.15,
                   fontWeight: FontWeight.w800,
-                  color: Color(0xFF243028),
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: 20),
@@ -187,7 +182,9 @@ class _RolePageState extends State<RolePage> {
                   onPressed: _loading ? null : _submit,
                   style: FilledButton.styleFrom(
                     backgroundColor: PawLogo.green,
-                    disabledBackgroundColor: PawLogo.green.withValues(alpha: 0.6),
+                    disabledBackgroundColor: PawLogo.green.withValues(
+                      alpha: 0.6,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                     ),
