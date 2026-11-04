@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/api_client.dart';
+import 'core/ads_service.dart';
 import 'core/theme_controller.dart';
 import 'animation_screen.dart';
 import 'features/auth/auth_api.dart';
@@ -21,6 +24,15 @@ Future<void> main() async {
     ),
   );
   runApp(PawRescueApp(themeController: themeController));
+  unawaited(_initializeAds());
+}
+
+Future<void> _initializeAds() async {
+  try {
+    await AdsService.instance.initialize();
+  } catch (error) {
+    debugPrint('Google Mobile Ads initialization failed: $error');
+  }
 }
 
 class PawRescueApp extends StatelessWidget {

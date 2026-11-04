@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../../core/ads_service.dart';
 import '../auth/auth_api.dart';
 import 'animal_api.dart';
 import 'animal_detail_page.dart';
@@ -153,6 +154,7 @@ class _AnimalsPageState extends State<AnimalsPage> {
       ),
     );
 
+    await AdsService.instance.onAnimalDetailClosed();
     await _loadAnimals();
   }
 
