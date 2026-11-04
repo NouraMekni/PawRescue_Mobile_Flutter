@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/api_client.dart';
@@ -23,7 +24,12 @@ Future<void> main() async {
           : 'fr',
     ),
   );
-  runApp(PawRescueApp(themeController: themeController));
+  runApp(
+    ChangeNotifierProvider.value(
+      value: themeController,
+      child: const PawRescueApp(),
+    ),
+  );
   unawaited(_initializeAds());
 }
 
@@ -36,37 +42,25 @@ Future<void> _initializeAds() async {
 }
 
 class PawRescueApp extends StatelessWidget {
-  const PawRescueApp({super.key, required this.themeController});
-
-  final ThemeController themeController;
+  const PawRescueApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<Locale>(
-      valueListenable: themeController.locale,
-      builder: (context, locale, _) => ValueListenableBuilder<ThemeMode>(
-        valueListenable: themeController.themeMode,
-        builder: (context, themeMode, _) {
-          return ThemeControllerScope(
-            controller: themeController,
-            child: MaterialApp(
-              title: 'PawRescue',
-              locale: locale,
-              supportedLocales: AppLocalizations.supportedLocales,
-              localizationsDelegates: const [
-                AppLocalizations.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-              ],
-              themeMode: themeMode,
-              theme: _buildTheme(Brightness.light),
-              darkTheme: _buildTheme(Brightness.dark),
-              home: AnimationScreen(authApi: AuthApi(ApiClient())),
-            ),
-          );
-        },
-      ),
+    final themeController = context.watch<ThemeController>();
+    return MaterialApp(
+      title: 'PawRescue',
+      locale: themeController.locale,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      themeMode: themeController.themeMode,
+      theme: _buildTheme(Brightness.light),
+      darkTheme: _buildTheme(Brightness.dark),
+      home: AnimationScreen(authApi: AuthApi(ApiClient())),
     );
   }
 

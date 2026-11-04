@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../../core/api_client.dart';
@@ -343,8 +344,14 @@ class _ProfileTabState extends State<ProfileTab> {
     final email = (widget.session.user['email'] ?? '').toString();
     final photoUrl = (widget.session.user['photo'] ?? '').toString();
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final themeController = ThemeControllerScope.maybeOf(context);
+    final themeController = context.watch<ThemeController?>();
     final messenger = ScaffoldMessenger.of(context);
+    final themeSaveError = context.tr(
+      'Impossible d’enregistrer le thème choisi.',
+    );
+    final languageSaveError = context.tr(
+      'Impossible d’enregistrer la langue choisie.',
+    );
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -407,13 +414,7 @@ class _ProfileTabState extends State<ProfileTab> {
                         return;
                       }
                       messenger.showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            context.tr(
-                              'Impossible d’enregistrer le thème choisi.',
-                            ),
-                          ),
-                        ),
+                        SnackBar(content: Text(themeSaveError)),
                       );
                     }
                   },
@@ -423,7 +424,7 @@ class _ProfileTabState extends State<ProfileTab> {
             contentPadding: EdgeInsets.zero,
             title: Text(context.tr('Langue')),
             trailing: DropdownButton<Locale>(
-              value: themeController?.locale.value ?? const Locale('fr'),
+              value: themeController?.locale ?? const Locale('fr'),
               items: [
                 for (final locale in AppLocalizations.supportedLocales)
                   DropdownMenuItem(
@@ -450,13 +451,7 @@ class _ProfileTabState extends State<ProfileTab> {
                           return;
                         }
                         messenger.showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              context.tr(
-                                'Impossible d’enregistrer la langue choisie.',
-                              ),
-                            ),
-                          ),
+                          SnackBar(content: Text(languageSaveError)),
                         );
                       }
                     },

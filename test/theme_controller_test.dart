@@ -15,7 +15,7 @@ void main() {
 
     await controller.setDarkMode(true);
 
-    expect(controller.themeMode.value, ThemeMode.dark);
+    expect(controller.themeMode, ThemeMode.dark);
     expect(preferences.getBool('dark_mode_enabled'), isTrue);
 
     final restartedController = ThemeController(
@@ -23,7 +23,7 @@ void main() {
       isDark: preferences.getBool('dark_mode_enabled') ?? false,
       locale: const Locale('fr'),
     );
-    expect(restartedController.themeMode.value, ThemeMode.dark);
+    expect(restartedController.themeMode, ThemeMode.dark);
   });
 
   test('selected language is persisted', () async {
@@ -37,7 +37,7 @@ void main() {
 
     await controller.setLocale(const Locale('ar'));
 
-    expect(controller.locale.value, const Locale('ar'));
+    expect(controller.locale, const Locale('ar'));
     expect(preferences.getString('language_code'), 'ar');
   });
 }
