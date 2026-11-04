@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../core/app_routes.dart';
+import '../animals/animal_detail_page.dart';
+import '../animals/animal_form_page.dart';
+import '../animals/animal_models.dart';
+import '../animals/animals_page.dart';
 import '../auth/auth_api.dart';
 import '../auth/paw_logo.dart';
 import '../messages/directory_page.dart';
@@ -8,7 +13,6 @@ import '../notifications/notifications_page.dart';
 import '../reports/citoyen_home_page.dart';
 import 'placeholder_tab.dart';
 import 'profile_tab.dart';
-import '../animals/animals_page.dart';
 import '../../l10n/app_localizations.dart';
 
 class PawShell extends StatefulWidget {
@@ -22,6 +26,8 @@ class PawShell extends StatefulWidget {
 }
 
 class _PawShellState extends State<PawShell> {
+  final _animalsNavigatorKey = GlobalKey<NavigatorState>();
+
   int _index = 0;
   int _unreadNotifications = 0;
 
@@ -50,7 +56,15 @@ class _PawShellState extends State<PawShell> {
               'Les animaux blessés à traiter en priorité apparaîtront ici.',
             ),
           ),
-          AnimalsPage(session: widget.session, authApi: widget.authApi),
+          NavigatorPopHandler<void>(
+            enabled: _index == 2,
+            onPopWithResult: (_) => _animalsNavigatorKey.currentState?.pop(),
+            child: Navigator(
+              key: _animalsNavigatorKey,
+              initialRoute: AppRoutes.animals,
+              onGenerateRoute: _onGenerateAnimalRoute,
+            ),
+          ),
           PlaceholderTab(
             title: context.tr('Carte'),
             icon: Icons.map,
@@ -89,6 +103,52 @@ class _PawShellState extends State<PawShell> {
       return CitoyenHomePage(session: widget.session, authApi: widget.authApi);
     }
     return RoleHomePage(session: widget.session, authApi: widget.authApi);
+  }
+
+  Route<dynamic>? _onGenerateAnimalRoute(RouteSettings settings) {
+    switch (settings.name) {
+      case AppRoutes.animals:
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (_) =>
+              AnimalsPage(session: widget.session, authApi: widget.authApi),
+        );
+      case AppRoutes.animalForm:
+        final arguments = settings.arguments;
+        if (arguments is! AnimalFormRouteArguments) {
+          throw ArgumentError(
+            'The ${AppRoutes.animalForm} route requires '
+            'AnimalFormRouteArguments.',
+          );
+        }
+        return MaterialPageRoute<Animal?>(
+          settings: settings,
+          builder: (_) => AnimalFormPage(
+            session: arguments.session,
+            authApi: widget.authApi,
+            animalApi: arguments.animalApi,
+          ),
+        );
+      case AppRoutes.animalDetail:
+        final arguments = settings.arguments;
+        if (arguments is! AnimalDetailRouteArguments) {
+          throw ArgumentError(
+            'The ${AppRoutes.animalDetail} route requires '
+            'AnimalDetailRouteArguments.',
+          );
+        }
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (_) => AnimalDetailPage(
+            animal: arguments.animal,
+            session: arguments.session,
+            authApi: widget.authApi,
+            animalApi: arguments.animalApi,
+          ),
+        );
+      default:
+        return null;
+    }
   }
 }
 

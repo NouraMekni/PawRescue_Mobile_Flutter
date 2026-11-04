@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:pawrescue_mobile/core/api_client.dart';
 import 'package:pawrescue_mobile/features/auth/auth_api.dart';
+import 'package:pawrescue_mobile/features/animals/animal_form_page.dart';
 import 'package:pawrescue_mobile/features/shell/citoyen_shell.dart';
 
 void main() {
@@ -35,7 +36,9 @@ void main() {
     await tester.tap(find.text('Carte'));
     await tester.pumpAndSettle();
     expect(
-      find.text('La carte montrera l’emplacement de tous les animaux signalés.'),
+      find.text(
+        'La carte montrera l’emplacement de tous les animaux signalés.',
+      ),
       findsOneWidget,
     );
 
@@ -48,7 +51,9 @@ void main() {
     expect(find.text('Se déconnecter'), findsOneWidget);
   });
 
-  testWidgets('a refuge gets the same menu and its own profile fields', (tester) async {
+  testWidgets('a refuge gets the same menu and its own profile fields', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(900, 1800);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
@@ -59,10 +64,16 @@ void main() {
         home: PawShell(
           session: AuthSession(
             accessToken: 'token',
-            user: {'email': 'refuge@test.tn', 'role': 'refuge', 'first_name': 'Sami'},
+            user: {
+              'email': 'refuge@test.tn',
+              'role': 'refuge',
+              'first_name': 'Sami',
+            },
           ),
           authApi: AuthApi(
-            ApiClient(client: MockClient((request) async => http.Response('[]', 200))),
+            ApiClient(
+              client: MockClient((request) async => http.Response('[]', 200)),
+            ),
           ),
         ),
       ),
@@ -71,10 +82,62 @@ void main() {
 
     expect(find.text('Carte'), findsOneWidget);
     expect(find.text('Notifs'), findsOneWidget);
-    expect(find.text('Complétez votre profil depuis l’onglet Profil.'), findsOneWidget);
+    expect(
+      find.text('Complétez votre profil depuis l’onglet Profil.'),
+      findsOneWidget,
+    );
     await tester.tap(find.text('Profil'));
     await tester.pumpAndSettle();
     expect(find.text('Nom du refuge'), findsOneWidget);
     expect(find.text('Capacité'), findsOneWidget);
+  });
+
+  testWidgets('animal tab keeps its own navigation stack when switching tabs', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(900, 1400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final client = MockClient((request) async => http.Response('[]', 200));
+    await tester.pumpWidget(
+      MaterialApp(
+        home: PawShell(
+          session: AuthSession(
+            accessToken: 'token',
+            user: {'email': 'citoyen@test.tn', 'role': 'citoyen'},
+          ),
+          authApi: AuthApi(ApiClient(client: client)),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Animaux'));
+    await tester.pumpAndSettle();
+    expect(find.text('Animaux à adopter'), findsOneWidget);
+
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
+    expect(find.byType(AnimalFormPage), findsOneWidget);
+
+    await tester.tap(find.text('Carte'));
+    await tester.pumpAndSettle();
+    expect(
+      find.text(
+        'La carte montrera l’emplacement de tous les animaux signalés.',
+      ),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.text('Animaux'));
+    await tester.pumpAndSettle();
+    expect(find.byType(AnimalFormPage), findsOneWidget);
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.byType(AnimalFormPage), findsNothing);
+    expect(find.text('Animaux à adopter'), findsOneWidget);
   });
 }
