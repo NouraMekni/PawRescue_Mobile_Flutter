@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "78175687602",
+    "project_id": "pawrescue-e567a",
+    "storage_bucket": "pawrescue-e567a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:78175687602:android:96f44a367d8f2492d34aab",
+        "android_client_info": {
+          "package_name": "tn.pawrescue.pawrescue_mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "78175687602-0dlm2h7uq2ulq7srli8hps9rrfiutgdj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "tn.pawrescue.pawrescue_mobile",
+            "certificate_hash": "c6d761048ac82baf446a47e42385c960b31cca4e"
+          }
+        },
+        {
+          "client_id": "78175687602-5akrfkqm9tienqfrlc5v4no48jecjpci.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAFC4PGcD-2yZjjtgIuYD5Cts3nhbKPxlU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "78175687602-5akrfkqm9tienqfrlc5v4no48jecjpci.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "78175687602-jdo4tid8eiol5dl8gt8d58ja0dnp0n3s.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "tn.pawrescue.pawrescueMobile"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

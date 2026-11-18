@@ -16,6 +16,31 @@ class ReportsApi {
     ];
   }
 
+  Future<List<Map<String, dynamic>>> mapMarkers({
+    required String token,
+    String? type,
+    String? species,
+    String? status,
+  }) async {
+    final query = <String>[];
+    if (type != null && type.isNotEmpty) {
+      query.add('type=${Uri.encodeQueryComponent(type)}');
+    }
+    if (species != null && species.isNotEmpty) {
+      query.add('species=${Uri.encodeQueryComponent(species)}');
+    }
+    if (status != null && status.isNotEmpty) {
+      query.add('status=${Uri.encodeQueryComponent(status)}');
+    }
+    final path =
+        '/api/reports/map/${query.isEmpty ? '' : '?${query.join('&')}'}';
+    final rows = await _client.getList(path, token: token);
+    return [
+      for (final row in rows)
+        if (row is Map) Map<String, dynamic>.from(row),
+    ];
+  }
+
   Future<Map<String, dynamic>> create({
     required String token,
     required String type,

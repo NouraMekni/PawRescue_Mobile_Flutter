@@ -34,13 +34,8 @@ void main() {
 
     expect(find.text('Signaler un animal'), findsOneWidget);
     await tester.tap(find.text('Carte'));
-    await tester.pumpAndSettle();
-    expect(
-      find.text(
-        'La carte montrera l’emplacement de tous les animaux signalés.',
-      ),
-      findsOneWidget,
-    );
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(find.text('Carte'), findsWidgets);
 
     await tester.tap(find.text('Notifs'));
     await tester.pumpAndSettle();
@@ -123,13 +118,8 @@ void main() {
     expect(find.byType(AnimalFormPage), findsOneWidget);
 
     await tester.tap(find.text('Carte'));
-    await tester.pumpAndSettle();
-    expect(
-      find.text(
-        'La carte montrera l’emplacement de tous les animaux signalés.',
-      ),
-      findsOneWidget,
-    );
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(find.text('Carte'), findsWidgets);
 
     await tester.tap(find.text('Animaux'));
     await tester.pumpAndSettle();

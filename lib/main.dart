@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_core/firebase_core.dart';
 
+import 'features/auth/firebase_auth_service.dart';
+import 'firebase_options.dart';
 import 'core/api_client.dart';
 import 'core/ads_service.dart';
 import 'core/app_routes.dart';
@@ -19,7 +22,17 @@ import 'l10n/app_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // STEP 1: Initialize Firebase FIRST
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // STEP 2: Initialize Google Sign-In AFTER Firebase
+  final firebaseAuthService = FirebaseAuthService();
+  await firebaseAuthService.initializeGoogleSignIn();
+
+  // STEP 3: Initialize local preferences
   final preferences = await SharedPreferences.getInstance();
+
   final themeController = ThemeController(
     preferences,
     isDark: preferences.getBool('dark_mode_enabled') ?? false,
@@ -29,13 +42,19 @@ Future<void> main() async {
           : 'fr',
     ),
   );
+
+  // STEP 4: Initialize your Django API
   final authApi = AuthApi(ApiClient());
+
+  // STEP 5: Start the application
   runApp(
     ChangeNotifierProvider.value(
       value: themeController,
       child: PawRescueApp(authApi: authApi),
     ),
   );
+
+  // STEP 6: Initialize ads separately
   unawaited(_initializeAds());
 }
 

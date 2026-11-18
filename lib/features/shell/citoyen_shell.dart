@@ -11,6 +11,8 @@ import '../messages/directory_page.dart';
 import '../messages/messages_page.dart';
 import '../notifications/notifications_page.dart';
 import '../reports/citoyen_home_page.dart';
+import '../reports/animals_map_page.dart';
+import '../reports/reports_api.dart';
 import 'placeholder_tab.dart';
 import 'profile_tab.dart';
 import '../../l10n/app_localizations.dart';
@@ -65,12 +67,10 @@ class _PawShellState extends State<PawShell> {
               onGenerateRoute: _onGenerateAnimalRoute,
             ),
           ),
-          PlaceholderTab(
-            title: context.tr('Carte'),
-            icon: Icons.map,
-            message: context.tr(
-              'La carte montrera l’emplacement de tous les animaux signalés.',
-            ),
+          AnimalsMapPage(
+            session: widget.session,
+            reports: ReportsApi(widget.authApi.client),
+            active: _index == 3,
           ),
           MessagesPage(session: widget.session, authApi: widget.authApi),
           NotificationsPage(
